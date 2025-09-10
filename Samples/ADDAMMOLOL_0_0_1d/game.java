@@ -1,0 +1,203 @@
+package ADDAMMOLOL_0_0_1d;
+
+import java.util.Scanner;
+
+//import java.util.Scanner;
+
+public class game {
+    private int playerSelectedActionID, enemySelectedActionID;
+    private actions playerActions,enemyActions;
+    private mainPlayer player,enemy;
+    private playerStats playerStats, enemyStats;
+    private gameStats playerGameStats,enemyGameStats;
+    private int binusDamage;
+    public static final int MAX_HP = 3;
+
+
+    public game(){
+        gamestart();
+    }
+    
+    public void gamestart(){
+
+            playerStats = new playerStats();
+            playerGameStats = new gameStats();
+        player = new player(3, 1, playerStats, playerGameStats,playerActions,"player");
+        //actions playerActions = new actions();
+        
+            enemyStats = new playerStats();
+            enemyGameStats = new gameStats();
+        enemy = new enemy(3,1, enemyStats,enemyGameStats,enemyActions,"enemy");
+        //actions enemyActions = new actions();
+
+        Scanner scan = new Scanner(System.in);
+        while(true){
+            player.getPlayerStats().resetDmgDefThief();
+            enemy.getPlayerStats().resetDmgDefThief();
+            binusDamage = 0;
+
+            System.out.printf("ID input: ");
+            
+            playerSelectedActionID = player.actionsSelecting(scan); 
+                playerActions = player.selectActions(playerSelectedActionID);
+            player.setPLayerActions(playerActions);//玩家选择的action
+
+            enemySelectedActionID = enemy.actionsSelecting(player.getHP(),player.getAmmoLeft(),playerGameStats);
+                enemyActions = enemy.selectActions(enemySelectedActionID);
+            enemy.setPLayerActions(enemyActions);//enemy电脑自动选择action
+
+            
+            System.out.println("The enemy selected: " + enemy.getPlayerActions().getActionNameString() + ", cost " + 
+                                enemy.getPlayerActions().getAmmoCost() + " ammo");
+            System.out.println("You've selected: " + player.getPlayerActions().getActionNameString() + ", cost " +
+                                player.getPlayerActions().getAmmoCost() + " ammo");
+
+            //actions属性转移。
+            player.generalActivating();
+            enemy.generalActivating();
+
+            mainPlayer moreDangerousPlayer = dangerousComparing(player, enemy);
+            mainPlayer lessDangerousPlayer;//参比对象主要还是以player而不是enemy类
+
+        
+            if(moreDangerousPlayer == null){//平局检查
+                lessDangerousPlayer = null;
+                System.out.println("nothing happened xD");
+                player.checkHealing();
+                enemy.checkHealing();
+
+            }else{
+                
+                lessDangerousPlayer = moreDangerousPlayer==player?enemy:player;
+                moreDangerousPlayer.winActivating();
+
+
+                /*以下是伤害计算 */
+                int damageDealt = moreDangerousPlayer.damageDealtTo(lessDangerousPlayer);
+
+                if(moreDangerousPlayer.getPlayerStats().isPolice()){//如果警察获胜
+                    
+                    if(lessDangerousPlayer.getPlayerStats().isPolice()){//又如果对面也是警察，不打
+                        damageDealt = 0;
+                    }
+                    if(lessDangerousPlayer.getPlayerActions().getDangerous() <= 0){//如果对面根本不危险，不执法
+                        damageDealt = 0;
+                        lessDangerousPlayer.checkHealing();
+                    }
+                    
+                }else if(moreDangerousPlayer.getPlayerStats().isThief()){//如果小偷获胜
+
+                    if(lessDangerousPlayer.getPlayerActions().getID() == 101){//如果对面是加子弹
+                        
+                        moreDangerousPlayer.setAmmoLeft(moreDangerousPlayer.getAmmoLeft() + lessDangerousPlayer.getAmmoLeft());//偷走对面所有子弹
+                        lessDangerousPlayer.setAmmoLeft(0);
+
+                    }else if(lessDangerousPlayer.getPlayerActions().isStealable()){//又如果对面的东西可偷
+                        moreDangerousPlayer.setPLayerActions(lessDangerousPlayer.getPlayerActions());//自己的action替换为对面的
+                        moreDangerousPlayer.winActivating();//再执行一次动作内容
+                        lessDangerousPlayer.ammoRetureTo(moreDangerousPlayer);//返还实行动作的子弹，因为东西是对面那里偷来的
+                        moreDangerousPlayer.generalActivating();//同理
+                        damageDealt = moreDangerousPlayer.damageDealtTo(lessDangerousPlayer);//用偷来的东西对被偷者造成伤害
+
+                    }else if(lessDangerousPlayer.getPlayerActions().isStealable() == false){//如果不可偷
+                        
+                        if(lessDangerousPlayer.getPlayerStats().isPolice()){//不管对面是警察，子弹照偷不误
+                            moreDangerousPlayer.setAmmoLeft(moreDangerousPlayer.getAmmoLeft() + lessDangerousPlayer.getAmmoLeft());//偷走对面所有子弹
+                            lessDangerousPlayer.setAmmoLeft(0);
+
+                        }
+                    }
+                }
+
+                moreDangerousPlayer.checkHealing();
+                
+                lessDangerousPlayer.setHP( lessDangerousPlayer.getHP() - damageDealt - binusDamage);//败者食尘 xD
+            }
+            
+
+            System.out.println("You now have "+player.getAmmoLeft()+" ammo left and "+player.getHP()+" HP left");
+            System.out.println("The enemy now has "+enemy.getAmmoLeft() + " ammo left and "+ enemy.getHP() +" HP left");
+
+            //System.out.println("<Debug message> "+moreDangerousPlayer + " | " + player + " | " + enemy);
+            System.out.println();
+            
+            if(player.getHP() <= 0 ){
+                System.out.println("Game Over! You lost...");
+                break;
+            }else if(enemy.getHP() <= 0){
+                System.out.println("Enemy defeated! You win! ");
+                break;
+            }
+        }
+    }
+    
+
+    /*************************************************************************************************************** */
+    public mainPlayer dangerousComparing(mainPlayer player1,mainPlayer player2){
+        mainPlayer winPlayer = null;
+        if(player1.getPlayerActions().getDangerous() > 0){//都有危险性，必须要打
+            if(player2.getPlayerActions().getDangerous() > player1.getPlayerActions().getDangerous()){//有实力，但没比过
+                winPlayer = player2;
+            }
+            else if(player2.getPlayerActions().getDangerous() < player1.getPlayerActions().getDangerous()){//有实力，也打过了
+                winPlayer = player1;
+            }
+            else{
+                //掷色子 50%概率
+                if(player1.getPlayerActions().getLegit() * player2.getPlayerActions().getLegit() > 0){
+                    //同行，不干架，
+                }else if(player1.getPlayerActions().getLegit() * player2.getPlayerActions().getLegit() < 0){//if same dangerous,cops vs crims and always cop win
+                    winPlayer = player1.getPlayerStats().isPolice()? player1:player2;
+                }else{
+                    if(RNGenerator.rateGenerator(50)){
+                        winPlayer = player1;
+                    }else{
+                        winPlayer = player2;
+                    }
+                }   
+            }
+        }
+        else if(player1.getPlayerActions().getDangerous() == 0){
+            if(player2.getPlayerActions().getDangerous() > 0){
+                winPlayer = player2;
+            }else{
+                //相安无事，返回空
+                //可以删掉这个else
+            }
+        }    
+        else{   //player1.getDangerous() < 0 你就是个DD
+            if(player2.getPlayerActions().getDangerous() > 0){
+                winPlayer = player2;
+            }
+        }
+        return winPlayer;
+    }
+
+    public mainPlayer dangerousComparing(mainPlayer player1,mainPlayer player2, mainPlayer player3){
+
+        return new player(){};
+        //留着以后多人游戏使用，计划最多支持4人，现在不要调用！！！
+    }
+    public mainPlayer dangerousComparing(mainPlayer player1,mainPlayer player2, mainPlayer player3, mainPlayer player4){
+        return new player(){};
+        //4人游戏用，同上。未来可能废弃
+    }
+    /******************************************************************************************************************* */
+
+    public void healingWhileDamaged(mainPlayer healingPlayer,int damageReceived){//
+        binusDamage = damageReceived;//喝药时被打受到双倍伤害
+        if(binusDamage == 0){
+            healingPlayer.setHP(healingPlayer.getHP() + 1);//回复一滴血
+        }
+        if(healingPlayer.getHP() >= MAX_HP){
+            healingPlayer.setHP(MAX_HP);
+        }
+    }
+
+/****************************************************************************** */
+
+    public static boolean  Crazymode(){
+        boolean isCrazyMode = false;
+        return isCrazyMode;
+    }
+}

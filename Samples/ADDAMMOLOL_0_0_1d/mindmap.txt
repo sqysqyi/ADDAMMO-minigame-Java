@@ -1,0 +1,72 @@
+------------------------
+双人游戏
+------------------------
+actions: 动作名；
+ammocost：子弹消耗；
+dangerous：小于0不会被trump锁定，小于1不会被legit小于0的“正义单位锁定，大于0你懂的
+legit：反映单位的合法程度，大于0一般是警察类，小于0一般是小偷类，等于0的是警察不管类
+isSteal: 决定是否为小偷系列的，0不是，1能投一个当前的东西，2偷走所有,-1是警察
+ifStealable: 该属性是否可以被偷盗，0条件可偷，1可偷，-1完全无法偷盗
+ID      actions     ammocost    dangerous   legit   rawDmg  rawDef  isSteal ifStealable
+10      addammo     -1          -1          0       0       0       0       1
+11      addlotammo  -2          -1          0       0       0       0       1
+
+20      defence     0           0           0       0       1       0       1
+21      police      0           0           -1      1       0       -1       0
+22      thief       0           1           1       0       0       1       -1
+23      slap        0           1           -1      1       0       0       -1
+24      heal        0           0           0       0       -2      0       1
+
+30      pistol      1           1           1       1       0       0       0
+31      alldef      1           0           0       0       3       0       -1
+32      antiairGun  1           0           1       0/1     1       0       0
+33      rogue       1           2           2       0       0       2       -1
+34      senate      1           0           -1      1       0       0       0
+35      reflection  1           1           0       0       1       0       -1
+
+40      duoPistol   2           1           1       2       0       0       0
+41      armedPolice 2           0           -2      2       1       -1       -1
+42      COCKLover   2           2           2       2       0       0       -1
+43      engineer    2           0           0       0       1       0       0
+44      mine        2           0           1       3       0       0       1
+45      APcannon    2           2           2       2/1     0       0       0
+46      setMissile  2           0           1       0       1       0       1
+47      instaHeal   2           0           0       0       -4      0       1
+
+50      RPG         3           3           2       3       0       0       0
+51      missile     3           3           3       3       0       0       -1
+52      robber      3           3           3       1       2       2       -1
+
+60      armyOffical 4           0           -4      3       2       -1       -1
+61      GatlinGUn   4           2           3       5       0       0       0
+62      assassin    4           3           4       1       0       2       -1
+
+70      MrQian      5           0           1       5/3     0       0       -1
+71      commander   5           0           -5      5       2       -1       -1
+
+80      DJTrump     7           4           0       9       0       0       0
+
+
+game.class 
+-> player , enemy1 , enemy2 ...
+|-> actions.class
+
+
+以上暂时作废
+下面重新开始审视基本游戏逻辑
+
+actions ID定义规则：
+1、int类型，3/4位整数构成，如101，402，225，1001，读取时按照格式 (x)x-xx 读取。
+2、最大支持99行99列
+3、同种类型的分类于同一行
+4、一定从编号为1开始
+
+暂时规定三种actions：
+--100 series: #about add ammo
+ ----101 addAmmo    ammoCost: -1    dangerous: -1   legit: 0    ifStealable: true   rawDmg: 0   rawDef: 0
+
+--200 series: #about simple attack behavior
+ ----201 pistol     ammoCost: 1     dangerous: 1    legit: 0    ifStealable: true   rawDmg: 1   rawDef: 0
+
+--300 series: #about simple defence behavior
+ ----301 defence    ammoCost: 1     dangerous: 0    legit: 0    ifStealable: false  rawDmg: 0   rawDef: 1
