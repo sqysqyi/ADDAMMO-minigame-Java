@@ -35,42 +35,13 @@ public class Player extends Players {
 
     @Override
     public int actionsSelecting(int playerInput,int playerAmmoLeft,GameStats playerGameStats){
-        int selectedActionID = 101;//default ID,addAmmo;
-        while (true) {
-            
-            /*************基本输入有效性检查*********************************************** */
-            if(!scan.hasNextInt()){//是否为int类型
-                System.out.println("Invaild input! Enter a integer type number!");
-                scan.nextLine();
-                System.out.printf("ID input: ");
-                continue;
-            }else{
-                selectedActionID = scan.nextInt();
-            }
-            if(selectedActionID < 101){//不合法ID输入
-                System.out.println("Invaild input! Try again...");
-                System.out.printf("ID input: ");
-                continue;
-            }
-            if(this.selectActions(selectedActionID) == null){//
-                System.out.println("Couldn't find this action ID, Try another one pls ...");
-                System.out.printf("ID input: ");
-                continue;
-            }
-            /**************具体有效性输入检查********************************************** */
-            if(this.selectActions(selectedActionID).getAmmoCost() > this.getAmmoLeft()){
-                System.out.println("Couldn't active this action, because you don't have enough ammo...");
-                System.out.printf("ID input:");
-                continue;
-            }//子弹剩余检查
-            break;
-            
+        int selectedActionID;
+        if(playerAmmoLeft < this.selectActions(playerInput).getAmmoCost()){
+            selectedActionID = -1;
+        }else{
+            selectedActionID = playerInput;
         }
         return selectedActionID;
-    }
+    }//虽然我知道这东西有点多余
 
-    public static int checkInput(Scanner input){
-        return 0;
-    }
-    
 }

@@ -6,8 +6,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
-import ADDAMMOLOL_0_1_x.AddAmmoUI.Game;
-
 //import javax.swing.JFrame;
 
 
@@ -15,6 +13,7 @@ public class Start{
     public static final int FRAME_HEIGHT = 600;
     public static final int FRAME_WIDTH = 800;
     private static final String version = "0.1.0";
+
     JFrame gameFrame = new JFrame("ADD AMMO v"+version);
 
     //private static final int num = 0;
