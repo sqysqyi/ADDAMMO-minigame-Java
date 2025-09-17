@@ -8,7 +8,7 @@ import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Actions;
 
 public class Player extends Players {
     
-    protected Scanner scan;
+   
     
     public Player(){
         super();
@@ -19,7 +19,6 @@ public class Player extends Players {
         //playerActions = new actions();
         super(HP, ammoLeft, playerActionStats, playerGameStats, playerActions, playerNameString);
         
-        scan = new Scanner(System.in);
     }
 
 /*************************************getter/setter 分割线******************************************* */ 

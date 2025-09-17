@@ -6,6 +6,8 @@ import java.awt.Font;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import ADDAMMOLOL_0_1_x.AddAmmoUI.initUI;
+
 public class ActionDiscriptionPane extends JScrollPane implements initUI {
     JTextArea discriptionArea;
 

@@ -17,7 +17,7 @@ import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.Player;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.Players;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.FrameSize;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.GameUI_Set.*;
-import ADDAMMOLOL_0_1_x.AddAmmoUtil.TransQueue;
+
 
 public class Game extends JPanel implements FrameSize, ActionListener {
     // UI渲染的参数声明；
@@ -38,6 +38,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
     private GameStats playerGameStats, enemyGameStats, enemy2GameStats, enemy3GameStats;
     private int binusDamage;
     public static final int MAX_HP = 3;
+    public static final int DEFAULT_AMMO = 1;
 
     public Game() throws Exception {
 
@@ -68,19 +69,21 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
     // 游戏过程中的胜负逻辑判断
     public void initGame() {
-        // while (true){
-
+       
         player.getPlayerStats().resetDmgDefThief();
         enemy.getPlayerStats().resetDmgDefThief();
+        
         binusDamage = 0;
-
+    }
+    public void resetStats(){
+        initGame();//只是复用方法，不代表包含关系
     }
 
     // 初始化玩家属性
     public void initPlayer(int totalPlayer) throws Exception {
         playerStats = new PlayerStats();
         playerGameStats = new GameStats();
-        player = new Player(3, 1,
+        player = new Player(MAX_HP, DEFAULT_AMMO,
                 playerStats,
                 playerGameStats,
                 playerActions,
@@ -91,7 +94,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
             case 4:
                 enemy3Stats = new PlayerStats();
                 enemy3GameStats = new GameStats();
-                enemy3 = new Enemy(3, 1,
+                enemy3 = new Enemy(MAX_HP, DEFAULT_AMMO,
                         enemy3Stats,
                         enemy3GameStats,
                         enemy3Actions,
@@ -100,7 +103,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
             case 3:
                 enemy2Stats = new PlayerStats();
                 enemy2GameStats = new GameStats();
-                enemy2 = new Enemy(3, 1,
+                enemy2 = new Enemy(MAX_HP, DEFAULT_AMMO,
                         enemy2Stats,
                         enemy2GameStats,
                         enemy2Actions,
@@ -109,7 +112,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
             case 2:
                 enemyStats = new PlayerStats();
                 enemyGameStats = new GameStats();
-                enemy = new Enemy(3, 1,
+                enemy = new Enemy(MAX_HP, DEFAULT_AMMO,
                         enemyStats,
                         enemyGameStats,
                         enemyActions,
@@ -119,8 +122,6 @@ public class Game extends JPanel implements FrameSize, ActionListener {
             default:
                 throw new Exception("invalid player numbers");
         }
-        playerHP = player.getHP();
-        playerAmmoleft = player.getAmmoLeft();
     }
 
     // 初始化UI界面
@@ -172,7 +173,12 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
     // above are UI-related initualizations
 
-    public void duoPlayerRound(int playerSelectedActionID) {
+    public  void duoPlayerRound(int playerSelectedActionID) {
+        {
+            player.getPlayerStats().resetDmgDefThief();
+            enemy.getPlayerStats().resetDmgDefThief();
+            binusDamage = 0;
+        }
 
         // playerSelectedActionID = 101 ;//
         // player.actionsSelecting(player.getHP(),player.getAmmoLeft(),playerGameStats);
@@ -204,7 +210,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
             enemy.checkHealing();
 
         } else {
-
+            System.out.println("开始判断危险人物");
             lessDangerousPlayer = moreDangerousPlayer == player ? enemy : player;
             moreDangerousPlayer.winActivating();
 
@@ -228,6 +234,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                     moreDangerousPlayer
                             .setAmmoLeft(moreDangerousPlayer.getAmmoLeft() + lessDangerousPlayer.getAmmoLeft());// 偷走对面所有子弹
                     lessDangerousPlayer.setAmmoLeft(0);
+                    System.out.println("checkpoint of stealing ammo");
 
                 } else if (lessDangerousPlayer.getPlayerActions().isStealable()) {// 又如果对面的东西可偷
                     moreDangerousPlayer.setPlayerActions(lessDangerousPlayer.getPlayerActions());// 自己的action替换为对面的
@@ -239,8 +246,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                 } else if (lessDangerousPlayer.getPlayerActions().isStealable() == false) {// 如果不可偷
 
                     if (lessDangerousPlayer.getPlayerStats().isPolice()) {// 不管对面是警察，子弹照偷不误
-                        moreDangerousPlayer
-                                .setAmmoLeft(moreDangerousPlayer.getAmmoLeft() + lessDangerousPlayer.getAmmoLeft());// 偷走对面所有子弹
+                        moreDangerousPlayer.setAmmoLeft(moreDangerousPlayer.getAmmoLeft() + lessDangerousPlayer.getAmmoLeft());// 偷走对面所有子弹
                         lessDangerousPlayer.setAmmoLeft(0);
 
                     }
@@ -250,11 +256,20 @@ public class Game extends JPanel implements FrameSize, ActionListener {
             moreDangerousPlayer.checkHealing();
 
             lessDangerousPlayer.setHP(lessDangerousPlayer.getHP() - damageDealt - binusDamage);// 败者食尘 xD
+            
+            System.out.println("Debug infor: (moreDanger) "+moreDangerousPlayer.toString());
+            System.out.println("Debug infor: (lessDanger) "+lessDangerousPlayer.toString());
+
         }
+
+        System.out.println("Debug info: "+ player.toString());
+        System.out.println("Debug info: "+ enemy.toString());
+        
 
         System.out.println("You now have " + player.getAmmoLeft() + " ammo left and " + player.getHP() + " HP left");
         System.out.println("The enemy now has " + enemy.getAmmoLeft() + " ammo left and " + enemy.getHP() + " HP left");
 
+        
         // playerHP_Label.setText("HP: "+player.getHP());
         // playerAmmoleftLabel.setText("Ammo: "+player.getAmmoLeft());
 
@@ -287,7 +302,9 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                                         " ammo out of "+ ActionsLib.searchActions(actionID).getAmmoCost()+" ammo requires.");
                     break;
                 }else{
+
                     duoPlayerRound(actionID);
+                    playerStatsPanel.update(player,enemy);
                     break;
                 }//用于子弹剩余判断，顺便提前诱发空指针
                  
@@ -296,6 +313,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                 break;
             } catch (NullPointerException ex) {
                 System.out.println("The action is NOT exist yet, try another one");
+                ex.printStackTrace();
                 break;
             } catch (Exception ex){
                 System.out.println("Nice job! How'd f you find such the input-related bug? Report it to me asap!!!");

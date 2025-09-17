@@ -16,6 +16,7 @@ import javax.swing.event.DocumentListener;
 
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Start;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionsLib;
+import ADDAMMOLOL_0_1_x.AddAmmoUI.initUI;
 
 public class SelectTablePanel extends JPanel implements initUI {
     JTextField playerInputTextField;
@@ -76,17 +77,17 @@ public class SelectTablePanel extends JPanel implements initUI {
         playerInputTextField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                updateLabelColors();
+                updateLabelColor();
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                updateLabelColors();
+                updateLabelColor();
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                updateLabelColors();
+                updateLabelColor();
             }
         });    
         add(playerInputTextField, BorderLayout.NORTH);
@@ -117,8 +118,7 @@ public class SelectTablePanel extends JPanel implements initUI {
         }
     }
 
-    
-    public void updateLabelColors(){
+    public void updateLabelColor(){
         String text = playerInputTextField.getText().trim();;
         resetLabelColor();
         if(text.isEmpty()){

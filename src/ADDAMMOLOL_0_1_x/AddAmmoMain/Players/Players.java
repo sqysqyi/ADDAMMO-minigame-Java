@@ -169,6 +169,15 @@ public abstract class Players {
         }
         return winPlayer;
     }
-
+    
+    @Override
+    public String toString(){
+        
+        return "["+this.playerNameString+">> RawDef: "+this.getPlayerStats().getRawDef()+
+                ", RawDmg; "+this.getPlayerStats().getRawDmg()+
+                ", AmmoCost: "+this.getPlayerActions().getAmmoCost()+
+                ", IsStealing: "+this.getPlayerStats().isThief()+
+                ", IsPolice: "+this.getPlayerStats().isPolice()+"]"; 
+    }
 
 }

@@ -2,7 +2,6 @@ package ADDAMMOLOL_0_1_x.AddAmmoMain.Players;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Scanner;
 
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Game;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.GameStats;

@@ -3,9 +3,14 @@ package ADDAMMOLOL_0_1_x.AddAmmoUI.GameUI_Set;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Game;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.*;
+import ADDAMMOLOL_0_1_x.AddAmmoUI.Updatable;
+import ADDAMMOLOL_0_1_x.AddAmmoUI.initUI;
+
 import java.awt.Color;
 
-public class PlayerStatsPanel extends JPanel implements initUI{
+public class PlayerStatsPanel extends JPanel implements initUI,Updatable{
     JLabel playerStatsTitleLabel,enemyStatsTitleLabel;
     JLabel playerHP_Label,enemyHP_Label;
     JLabel playerAmmoleftLabel,enemyAmmoLeftLabel ;
@@ -28,20 +33,20 @@ public class PlayerStatsPanel extends JPanel implements initUI{
         enemyStatsTitleLabel = new JLabel("Enemy Stats");
             enemyStatsTitleLabel.setForeground(Color.WHITE);
             
-        playerHP_Label = new JLabel("HP: ");
+        playerHP_Label = new JLabel("HP: " + Game.MAX_HP);
             playerHP_Label.setForeground(Color.WHITE);
             //playerHP_Label.setAlignmentX(Component.CENTER_ALIGNMENT);
             //playerHP_Label.setHorizontalAlignment(SwingConstants.CENTER);        
 
-        enemyHP_Label = new JLabel("HP: ");
+        enemyHP_Label = new JLabel("HP: " + Game.MAX_HP);
             enemyHP_Label.setForeground(Color.WHITE);
               
-        playerAmmoleftLabel = new JLabel("Ammo: " );
+        playerAmmoleftLabel = new JLabel("Ammo: " + Game.DEFAULT_AMMO );
             playerAmmoleftLabel.setForeground(Color.WHITE);
             //playerAmmoleftLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             //playerAmmoleftLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        enemyAmmoLeftLabel = new JLabel("Ammo: " );
+        enemyAmmoLeftLabel = new JLabel("Ammo: " + Game.DEFAULT_AMMO);
             enemyAmmoLeftLabel.setForeground(Color.WHITE);
 
         playerSelectedActionLabel = new JLabel("Action: It's your turn"  );
@@ -71,4 +76,25 @@ public class PlayerStatsPanel extends JPanel implements initUI{
         add(new JLabel());
     }
     
+    @Override 
+    public void update(Players player, Players enemy){
+        playerHP_Label.setText("HP: " + player.getHP());
+        if(player.getHP() <= 1){
+            playerHP_Label.setForeground(Color.RED);
+        }else{
+            playerHP_Label.setForeground(Color.WHITE);
+        }
+        enemyHP_Label.setText("HP: " + enemy.getHP());
+        if(enemy.getHP() <= 1){
+            enemyHP_Label.setForeground(Color.RED);
+        }else{
+            enemyHP_Label.setForeground(Color.WHITE);
+        }
+
+        playerAmmoleftLabel.setText("Ammo: " + player.getAmmoLeft());
+        enemyAmmoLeftLabel.setText("Ammo: " + enemy.getAmmoLeft());
+
+        playerSelectedActionLabel.setText("Action: " + player.getPlayerActions().getActionNameString());
+        enemySelectedActionLabel.setText("Action: " + enemy.getPlayerActions().getActionNameString());
+    }
 }

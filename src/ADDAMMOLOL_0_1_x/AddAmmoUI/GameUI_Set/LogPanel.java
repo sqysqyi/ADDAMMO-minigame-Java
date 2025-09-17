@@ -5,6 +5,8 @@ import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import ADDAMMOLOL_0_1_x.AddAmmoUI.initUI;
+
 public class LogPanel extends JPanel implements initUI{
     JLabel currentRound,lastRoundResult,inforUpLabel,inforDownLabel ;
     public LogPanel(){

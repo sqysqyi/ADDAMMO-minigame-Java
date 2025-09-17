@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "start",
+            "request": "launch",
+            "mainClass": "Samples.ADDAMMOLOL_0_0_1d.start",
+            "projectName": "AddAmmo_95fb4fd7"
+        },
+        {
+            "type": "java",
+            "name": "start",
+            "request": "launch",
+            "mainClass": "start",
+            "projectName": "AddAmmo_95fb4fd7"
+        },
+        {
+            "type": "java",
             "name": "Launch Java Program",
             "request": "launch",
             "mainClass": ""
