@@ -60,6 +60,25 @@ public class ActionsLib {
         }
         return actions;
     }
+    public static String searchActionsDiscription(int ID){
+        switch(ID){
+            
+            case 0: return "";
+            case 101: return "You can have +1 ammo";
+            case 201: return "Consume 1 ammo to shoot enemy";
+            case 202: return "Consume 2 ammos to shhot enemy";
+            case 301: return "Buff yourself +1 defence to reduce 1 damage from enemy";
+            case 302: return "Allow you reflect specific damage back to enemy (not working now)";
+            case 401: return "Steal ammos or items from ONE enemy";
+            case 402: return "Steal stuffs nut more powerful than thief";
+            case 501: return "Always ready to stop any possible illegal actions in battle";
+            case 502: return "Justice, strong than normal police";
+            case 601: return "You know, a powerful. unbreakable weapon dealing 3 damage";
+            case 701: return "+1 HP, or receive x2 coming damage while consuming";
+            default: return "<Action discription texture>";
+        }
+
+    }
 
     public static String getActionName(int actionID){
         return searchActions(actionID)==null?"<null>":searchActions(actionID).getActionNameString();

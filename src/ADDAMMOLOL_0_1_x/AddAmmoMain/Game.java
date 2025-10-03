@@ -16,7 +16,11 @@ import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.Enemy;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.Player;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.Players;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.FrameSize;
+import ADDAMMOLOL_0_1_x.AddAmmoUI.TextChangeListener;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.GameUI_Set.*;
+import ADDAMMOLOL_0_1_x.AddAmmoUtil.RNGenerator;
+import Samples.ADDAMMOLOL_0_0_1d.mainPlayer;
+
 
 
 public class Game extends JPanel implements FrameSize, ActionListener {
@@ -28,17 +32,17 @@ public class Game extends JPanel implements FrameSize, ActionListener {
     SelectTablePanel selectTablePanel;
     JPanel secendPanel;
 
-    int playerHP, playerAmmoleft;
-
     // 逻辑参数声明
-    private int playerSelectedActionID, enemySelectedActionID, enemy2SelectedActionID, enemy3SelectedActionID;
     private Actions playerActions, enemyActions, enemy2Actions, enemy3Actions;
     private Players player, enemy, enemy2, enemy3;
     private PlayerStats playerStats, enemyStats, enemy2Stats, enemy3Stats;
     private GameStats playerGameStats, enemyGameStats, enemy2GameStats, enemy3GameStats;
     private int binusDamage;
+
     public static final int MAX_HP = 3;
     public static final int DEFAULT_AMMO = 1;
+    public static int round = 1;
+    public static boolean isGameOver = false;
 
     public Game() throws Exception {
 
@@ -60,11 +64,11 @@ public class Game extends JPanel implements FrameSize, ActionListener {
          * 
          */
         initPlayer(2);
+        initGame();
         initUI();
 
         selectTablePanel.setInputListener(this);
-
-        initGame();
+        
     }
 
     // 游戏过程中的胜负逻辑判断
@@ -74,7 +78,11 @@ public class Game extends JPanel implements FrameSize, ActionListener {
         enemy.getPlayerStats().resetDmgDefThief();
         
         binusDamage = 0;
+        isGameOver = false;
+        round = 1;
     }
+
+
     public void resetStats(){
         initGame();//只是复用方法，不代表包含关系
     }
@@ -130,6 +138,13 @@ public class Game extends JPanel implements FrameSize, ActionListener {
         playerStatsPanel = new PlayerStatsPanel();
         selectTablePanel = new SelectTablePanel();
         actionDiscriptionPane = new ActionDiscriptionPane();
+
+        selectTablePanel.setTextChangeListener(new TextChangeListener() {
+            @Override
+            public void onTextChanged(String text){
+                updateActionDiscription(text);
+            }
+        });
         initFramework();
     }
 
@@ -171,21 +186,30 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
     }
 
+    
     // above are UI-related initualizations
 
-    public  void duoPlayerRound(int playerSelectedActionID) {
+    public void duoPlayerRound(int playerSelectedActionID) {
         {
             player.getPlayerStats().resetDmgDefThief();
             enemy.getPlayerStats().resetDmgDefThief();
             binusDamage = 0;
         }
-
+        System.out.println(binusDamage);
+        logPanel.updateLog(
+            LogPanel.AT_FIRST,
+            "Round: "+ ++round,
+            0);
+        logPanel.updateLog(
+            LogPanel.AT_SECEND,
+            "", 
+            LogPanel.INFO_MSG);
         // playerSelectedActionID = 101 ;//
         // player.actionsSelecting(player.getHP(),player.getAmmoLeft(),playerGameStats);
         playerActions = player.selectActions(playerSelectedActionID);
         player.setPlayerActions(playerActions);// 玩家选择的action
 
-        enemySelectedActionID = enemy.actionsSelecting(player.getHP(), player.getAmmoLeft(), playerGameStats);
+        int enemySelectedActionID = enemy.actionsSelecting(player.getHP(), player.getAmmoLeft(), playerGameStats);
         enemyActions = enemy.selectActions(enemySelectedActionID);
         enemy.setPlayerActions(enemyActions);// enemy电脑自动选择action
 
@@ -203,11 +227,15 @@ public class Game extends JPanel implements FrameSize, ActionListener {
         Players moreDangerousPlayer = Players.dangerousComparing(player, enemy);
         Players lessDangerousPlayer;// 参比对象主要还是以player而不是enemy类
 
+        
+
         if (moreDangerousPlayer == null) {// 平局检查
             lessDangerousPlayer = null;
             System.out.println("nothing happened xD");
-            player.checkHealing();
-            enemy.checkHealing();
+            logPanel.updateLog(LogPanel.AT_SECEND, "Nothing happened, or not? ", LogPanel.NOTIFY_MSG);
+
+            player.checkHealing(0);
+            enemy.checkHealing(0);
 
         } else {
             System.out.println("开始判断危险人物");
@@ -221,20 +249,45 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
                 if (lessDangerousPlayer.getPlayerStats().isPolice()) {// 又如果对面也是警察，不打
                     damageDealt = 0;
-                }
-                if (lessDangerousPlayer.getPlayerActions().getDangerous() <= 0) {// 如果对面根本不危险，不执法
+                    logPanel.updateLog(LogPanel.AT_SECEND, "All good maybe", LogPanel.INFO_MSG);
+                }else if (lessDangerousPlayer.getPlayerActions().getDangerous() <= 0) {// 如果对面根本不危险，不执法
                     damageDealt = 0;
-                    lessDangerousPlayer.checkHealing();
-                }
+                    logPanel.updateLog(LogPanel.AT_SECEND, "All good maybe", LogPanel.INFO_MSG);
+                }else 
+                    if(moreDangerousPlayer == player){
+                        logPanel.updateLog(
+                            LogPanel.AT_THIRD, 
+                            "You as the \""+player.getPlayerActions().getActionNameString()+
+                        "\" successed in stop the enemy as the \""+enemy.getPlayerActions().getActionNameString()+"\"and dealt"+
+                        damageDealt+" damage", 
+                            LogPanel.INFO_MSG);
+                    }else{
+                        logPanel.updateLog(
+                            LogPanel.AT_THIRD, 
+                            "You unfortunately as the \""+player.getPlayerActions().getActionNameString()+
+                        "\" and arrested by the enemy as the \""+enemy.getPlayerActions().getActionNameString() +"\" and received"
+                        +damageDealt+" damage",
+                            LogPanel.NOTIFY_MSG);
+                    }
 
             } else if (moreDangerousPlayer.getPlayerStats().isThief()) {// 如果小偷获胜
 
                 if (lessDangerousPlayer.getPlayerActions().getID() == 101) {// 如果对面是加子弹
 
-                    moreDangerousPlayer
-                            .setAmmoLeft(moreDangerousPlayer.getAmmoLeft() + lessDangerousPlayer.getAmmoLeft());// 偷走对面所有子弹
+                    moreDangerousPlayer.setAmmoLeft(
+                        moreDangerousPlayer.getAmmoLeft() + lessDangerousPlayer.getAmmoLeft());// 偷走对面所有子弹
                     lessDangerousPlayer.setAmmoLeft(0);
-                    System.out.println("checkpoint of stealing ammo");
+                    if(moreDangerousPlayer == player){
+                        logPanel.updateLog(
+                            LogPanel.AT_SECEND, 
+                            "You just stole all the enemy's ammo!", 
+                            LogPanel.INFO_MSG);
+                    }else{
+                        logPanel.updateLog(
+                            LogPanel.AT_SECEND, 
+                            "Sadly you lost all your ammo :(",
+                            damageDealt);
+                    }
 
                 } else if (lessDangerousPlayer.getPlayerActions().isStealable()) {// 又如果对面的东西可偷
                     moreDangerousPlayer.setPlayerActions(lessDangerousPlayer.getPlayerActions());// 自己的action替换为对面的
@@ -243,28 +296,93 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                     moreDangerousPlayer.generalActivating();// 同理
                     damageDealt = moreDangerousPlayer.damageDealtTo(lessDangerousPlayer);// 用偷来的东西对被偷者造成伤害
 
+                    if(moreDangerousPlayer == player){
+                        logPanel.updateLog(
+                            LogPanel.AT_SECEND, 
+                            "You just stole the enemy's \""+lessDangerousPlayer.getPlayerActions().getActionNameString()+ "\" action.",
+                            LogPanel.INFO_MSG);
+                    }else{
+                        logPanel.updateLog(
+                            LogPanel.AT_SECEND,
+                            "Your \""+ damageDealt + "\" was stolen",
+                            LogPanel.INFO_MSG);
+                    }
+
                 } else if (lessDangerousPlayer.getPlayerActions().isStealable() == false) {// 如果不可偷
 
                     if (lessDangerousPlayer.getPlayerStats().isPolice()) {// 不管对面是警察，子弹照偷不误
                         moreDangerousPlayer.setAmmoLeft(moreDangerousPlayer.getAmmoLeft() + lessDangerousPlayer.getAmmoLeft());// 偷走对面所有子弹
                         lessDangerousPlayer.setAmmoLeft(0);
-
+                        
+                        if(moreDangerousPlayer == player){
+                            logPanel.updateLog(
+                                LogPanel.AT_SECEND, 
+                                "You just robbed the enemy's all left ammo",
+                                LogPanel.INFO_MSG);
+                        }else{
+                            logPanel.updateLog(
+                                LogPanel.AT_SECEND,
+                                "Your lost all left ammo",
+                                LogPanel.INFO_MSG);
+                        }
+                    }else{
+                        logPanel.updateLog(
+                            LogPanel.AT_SECEND, 
+                            "Seems nothing got stolen", 
+                            LogPanel.INFO_MSG);
                     }
                 }
+            }else{
+                if(moreDangerousPlayer == player){
+                    logPanel.updateLog(
+                        LogPanel.AT_THIRD, 
+                        "You just dealt "+ damageDealt+" damage", 
+                        LogPanel.INFO_MSG);
+                    logPanel.updateLog(
+                        LogPanel.AT_SECEND, 
+                        "You just dealt "+ damageDealt+" damage", 
+                        LogPanel.INFO_MSG);
+                }else{
+                    logPanel.updateLog(
+                        LogPanel.AT_THIRD,
+                        "You just received "+ damageDealt +" damage", 
+                        LogPanel.NOTIFY_MSG);
+                    logPanel.updateLog(
+                        LogPanel.AT_SECEND, 
+                        "You just reveived "+ damageDealt +" damage", 
+                        LogPanel.INFO_MSG);
+                }
+                
+            }
+            System.out.println(binusDamage);
+
+            moreDangerousPlayer.checkHealing(0);//现阶段只可能是0
+            lessDangerousPlayer.checkHealing(damageDealt);
+
+            lessDangerousPlayer.setHP(lessDangerousPlayer.getHP() - damageDealt);// 败者食尘 xD
+            
+            //System.out.println("Debug infor: (moreDanger) "+moreDangerousPlayer.toString());
+            //System.out.println("Debug infor: (lessDanger) "+lessDangerousPlayer.toString());
+            if(RNGenerator.isActivated){
+                if(moreDangerousPlayer == player){
+                    logPanel.updateLog(
+                        LogPanel.AT_THIRD,
+                        "RNGenerator just activated and you are lucky :)", 
+                        LogPanel.INFO_MSG);
+                }else{
+                    logPanel.updateLog(
+                        LogPanel.AT_THIRD, 
+                        "The dice of fate just rolled and you lost this round",
+                        LogPanel.NOTIFY_MSG);
+                }
+                RNGenerator.isActivated = false;
             }
 
-            moreDangerousPlayer.checkHealing();
-
-            lessDangerousPlayer.setHP(lessDangerousPlayer.getHP() - damageDealt - binusDamage);// 败者食尘 xD
-            
-            System.out.println("Debug infor: (moreDanger) "+moreDangerousPlayer.toString());
-            System.out.println("Debug infor: (lessDanger) "+lessDangerousPlayer.toString());
-
         }
-
+        /* 
         System.out.println("Debug info: "+ player.toString());
         System.out.println("Debug info: "+ enemy.toString());
-        
+        */
 
         System.out.println("You now have " + player.getAmmoLeft() + " ammo left and " + player.getHP() + " HP left");
         System.out.println("The enemy now has " + enemy.getAmmoLeft() + " ammo left and " + enemy.getHP() + " HP left");
@@ -279,44 +397,68 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
         if (player.getHP() <= 0) {
             System.out.println("Game Over! You lost...");
+            logPanel.updateLog(LogPanel.AT_THIRD, "Game over! You lost...", LogPanel.INFO_MSG);
+            isGameOver = true;
 
         } else if (enemy.getHP() <= 0) {
             System.out.println("Enemy defeated! You win! ");
+            logPanel.updateLog(LogPanel.AT_THIRD, "Enemy deafeated! You win! ", LogPanel.INFO_MSG);
+            isGameOver = true;  
+        }
+
+    }
+
+    public void healingWhileDamaged(mainPlayer healingPlayer,int damageReceived){
+        binusDamage = damageReceived;//喝药时被打受到双倍伤害
+        if(binusDamage == 0){
+            healingPlayer.setHP(healingPlayer.getHP() + 1);//回复一滴血
+        }
+        if(healingPlayer.getHP() >= MAX_HP){
+            healingPlayer.setHP(MAX_HP);
         }
     }
 
     @Override//重写actionlistener中的方法
     public void actionPerformed(ActionEvent e) {
         while (true) {
+            String input = selectTablePanel.getInput().trim();
             try {
-                String input = selectTablePanel.getInput().trim();
+                
                 if (input.isEmpty()) {
                     System.out.println("please input the action ID");
+                    logPanel.updateLog(LogPanel.AT_FOURTH, "Please input the action ID ):<", LogPanel.ERROR_MSG);
                     break;
                 }
 
                 int actionID = Integer.parseInt(input);
                 int preSelections = player.actionsSelecting(actionID, player.getAmmoLeft(), player.getGameStats());
                 if(preSelections == -1){
-                    System.out.println("Failed to active the selected action, Because you have "+player.getAmmoLeft()+
-                                        " ammo out of "+ ActionsLib.searchActions(actionID).getAmmoCost()+" ammo requires.");
+                    String msg = "Failed to active the selected action: "+ActionsLib.searchActions(actionID).getActionNameString()+" ,Because you have "+player.getAmmoLeft()+
+                                " ammo out of "+ ActionsLib.searchActions(actionID).getAmmoCost()+" ammo requires.";
+                    System.out.println(msg);
+                    logPanel.updateLog(LogPanel.AT_FOURTH, msg, LogPanel.ERROR_MSG);
                     break;
                 }else{
 
                     duoPlayerRound(actionID);
                     playerStatsPanel.update(player,enemy);
+                    logPanel.updateLog(LogPanel.AT_FOURTH,"You just selected -> "+ActionsLib.getActionName(actionID) , LogPanel.INFO_MSG);
                     break;
                 }//用于子弹剩余判断，顺便提前诱发空指针
                  
             } catch (NumberFormatException ex) {
                 System.out.println("Invalid input! ");
+                logPanel.updateLog(LogPanel.AT_FOURTH, "/!\\ Invaild input! -> \"" + input + " \"", LogPanel.ERROR_MSG);
                 break;
             } catch (NullPointerException ex) {
                 System.out.println("The action is NOT exist yet, try another one");
-                ex.printStackTrace();
+                logPanel.updateLog(LogPanel.AT_FOURTH, "/!\\ The action is NOT exist yet, try another one", LogPanel.ERROR_MSG);
+                //ex.printStackTrace();
                 break;
             } catch (Exception ex){
                 System.out.println("Nice job! How'd f you find such the input-related bug? Report it to me asap!!!");
+                logPanel.updateLog(LogPanel.AT_FOURTH, 
+                    "/!\\ Nice job! How'd f you find such the input-related bug? Report it to me asap!!!", LogPanel.ERROR_MSG);
                 break;
             }
              finally {
@@ -324,6 +466,19 @@ public class Game extends JPanel implements FrameSize, ActionListener {
             }
         }
 
+    }
+
+    public void updateActionDiscription(String text){
+        if(text == null || text.trim().isEmpty()){
+            actionDiscriptionPane.setDiscription("null");
+            return;
+        }
+        try{
+            int ID = Integer.parseInt(text.trim());
+            actionDiscriptionPane.updateDiscription(ID);
+        }catch(Exception ex){
+            actionDiscriptionPane.setDiscription("null");
+        }
     }
 
 }

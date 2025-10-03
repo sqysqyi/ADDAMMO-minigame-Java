@@ -14,8 +14,10 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Game;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Start;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionsLib;
+import ADDAMMOLOL_0_1_x.AddAmmoUI.TextChangeListener;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.initUI;
 
 public class SelectTablePanel extends JPanel implements initUI {
@@ -23,13 +25,14 @@ public class SelectTablePanel extends JPanel implements initUI {
     JPanel tablePanel;
     JLabel[][] tableElements = new JLabel[9][4];
     private ActionListener inputListener;
+    private TextChangeListener textChangeListener;
 
     public SelectTablePanel(){
         initualizeUI();
         playerInputTextField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent E){
-                if(inputListener != null){
+                if(inputListener != null && !Game.isGameOver){
                     inputListener.actionPerformed(E);
                 }
             }
@@ -78,23 +81,34 @@ public class SelectTablePanel extends JPanel implements initUI {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 updateLabelColor();
+                callTextChanged();
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
                 updateLabelColor();
+                callTextChanged();
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
                 updateLabelColor();
+                callTextChanged();
             }
         });    
         add(playerInputTextField, BorderLayout.NORTH);
     }
+    private void callTextChanged() {
+        if (textChangeListener != null) {
+            textChangeListener.onTextChanged(playerInputTextField.getText());
+        }
+    }
 
     public void setInputListener(ActionListener listener){
         this.inputListener = listener;
+    }
+    public void setTextChangeListener(TextChangeListener listener){
+        this.textChangeListener = listener;
     }
     
     public String getInput(){

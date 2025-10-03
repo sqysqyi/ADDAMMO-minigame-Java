@@ -6,6 +6,7 @@ import java.awt.Font;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionsLib;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.initUI;
 
 public class ActionDiscriptionPane extends JScrollPane implements initUI {
@@ -28,4 +29,19 @@ public class ActionDiscriptionPane extends JScrollPane implements initUI {
         setViewportView(discriptionArea);
         //actionDiscriptionPane.add(discriptionAre
     }
+
+    public void updateDiscription(int ID){
+        if(ActionsLib.searchActions(ID) != null){
+            discriptionArea.setText("Action ID: "+ID + "\n"+
+                                    "Action name: " + ActionsLib.getActionName(ID) + "\n"+
+                                    "Action discription: "+ ActionsLib.searchActionsDiscription(ID));              
+        }else{
+            discriptionArea.setText("null");
+        }
+    }
+    public void setDiscription(String text){
+        discriptionArea.setText(text);
+    }
+
+
 }

@@ -85,7 +85,7 @@ public abstract class Players {
 
     public void setStateDefault(){
         this.playerStats.resetDmgDefThief();
-        this.ammoLeft = 0;
+        this.ammoLeft = 1;
         this.HP = 3;
     } 
 
@@ -122,9 +122,15 @@ public abstract class Players {
         int newAmmoAmount = player.getAmmoLeft() + this.getPlayerActions().getAmmoCost();
         player.setAmmoLeft(newAmmoAmount);
     }
-    public void checkHealing(){
-        if(this.playerActions.getID() == 701 && this.getHP() < Game.MAX_HP){
-            this.setHP(getHP() + 1);
+    public void checkHealing(int damageReceived){
+        if(this.playerActions.getID() == 701 ){
+            if(damageReceived <= 0 && this.HP < Game.MAX_HP){
+                this.HP += 1;
+                System.out.println("debug");
+            }else if(damageReceived > 0){
+                this.HP -= damageReceived;
+            }
+            
         }
     }
 
@@ -151,6 +157,7 @@ public abstract class Players {
                     }else{
                         winPlayer = player2;
                     }
+                    RNGenerator.isActivated = true;
                 }   
             }
         }
