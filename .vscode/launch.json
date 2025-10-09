@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "ADDAMMOLOL_0_1_x.Main",
+            "projectName": "AddAmmo_95fb4fd7"
+        },
+        {
+            "type": "java",
             "name": "simpleTest",
             "request": "launch",
             "mainClass": "Samples.simpleTest.simpleTest",

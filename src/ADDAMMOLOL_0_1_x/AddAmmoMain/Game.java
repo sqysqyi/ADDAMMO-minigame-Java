@@ -3,6 +3,7 @@ package ADDAMMOLOL_0_1_x.AddAmmoMain;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,8 +17,8 @@ import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.Enemy;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.Player;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.Players;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.FrameSize;
-import ADDAMMOLOL_0_1_x.AddAmmoUI.TextChangeListener;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.GameUI_Set.*;
+import ADDAMMOLOL_0_1_x.AddAmmoUI.GameUI_Set.DialogPanel.ButtonSelectingListener;
 import ADDAMMOLOL_0_1_x.AddAmmoUtil.RNGenerator;
 import Samples.ADDAMMOLOL_0_0_1d.mainPlayer;
 
@@ -69,6 +70,14 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
         selectTablePanel.setInputListener(this);
         
+    }
+    public void setSubCompVisible(boolean visible){
+        
+        //actionDiscriptionPane.setVisible(visible);
+        logPanel.setVisible(visible);
+        //playerStatsPanel.setVisible(visible);
+        selectTablePanel.setVisible(visible);
+        secendPanel.setVisible(visible);
     }
 
     // 游戏过程中的胜负逻辑判断
@@ -139,12 +148,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
         selectTablePanel = new SelectTablePanel();
         actionDiscriptionPane = new ActionDiscriptionPane();
 
-        selectTablePanel.setTextChangeListener(new TextChangeListener() {
-            @Override
-            public void onTextChanged(String text){
-                updateActionDiscription(text);
-            }
-        });
+        selectTablePanel.setTextChangeListener(text -> updateActionDiscription(text));
         initFramework();
     }
 
@@ -479,6 +483,35 @@ public class Game extends JPanel implements FrameSize, ActionListener {
         }catch(Exception ex){
             actionDiscriptionPane.setDiscription("null");
         }
+    }
+
+    public void restartNewConfigingGame(){
+        DialogPanel restartNew = new DialogPanel("Are you sure to restart a new game? ");
+
+        restartNew.addButtonSelectingListener(new ButtonSelectingListener() {
+            @Override
+            public void onCancelClicked(){
+                remove(restartNew);
+
+                setLayout(new BorderLayout());
+                setBackground(Color.BLACK);
+
+                setSubCompVisible(true);
+
+                revalidate();
+                repaint();
+            }
+        });
+        
+        setLayout(new FlowLayout());
+        setBackground(Color.DARK_GRAY);
+
+        add(restartNew);
+
+        setSubCompVisible(false);
+
+        revalidate();
+        repaint();
     }
 
 }

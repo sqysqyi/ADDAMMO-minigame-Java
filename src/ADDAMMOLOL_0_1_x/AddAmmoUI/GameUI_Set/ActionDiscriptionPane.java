@@ -9,7 +9,7 @@ import javax.swing.JTextArea;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionsLib;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.initUI;
 
-public class ActionDiscriptionPane extends JScrollPane implements initUI {
+public final class ActionDiscriptionPane extends JScrollPane implements initUI {
     JTextArea discriptionArea;
 
     public ActionDiscriptionPane(){

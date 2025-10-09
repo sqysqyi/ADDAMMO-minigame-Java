@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Game;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.initUI;
 
-public class LogPanel extends JPanel implements initUI{
+public final class LogPanel extends JPanel implements initUI{
     JLabel currentRound,lastRoundResult,infoUpLabel,infoDownLabel ;
     public LogPanel(){
         initualizeUI();

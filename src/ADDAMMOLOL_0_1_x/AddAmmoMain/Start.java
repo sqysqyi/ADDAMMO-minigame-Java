@@ -1,5 +1,7 @@
 package ADDAMMOLOL_0_1_x.AddAmmoMain;
 
+import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -7,35 +9,23 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-//import javax.swing.JFrame;
+import ADDAMMOLOL_0_1_x.AddAmmoUI.GameUI_Set.DialogPanel;
 
 public class Start {
     public static int FRAME_HEIGHT = 600;
     public static int FRAME_WIDTH = 800;
-    private static final String version = "0.1.0 preview";
+    public static final String version = "0.1.0 preview";
+
+    public Game game;
 
     JFrame gameFrame = new JFrame("ADD AMMO v" + version);
 
     // private static final int num = 0;
-    public static void main(String[] args) throws Exception {
-        System.out.println("AddAmmo " + version + ", gui snapshot ");
+    
 
-        SwingUtilities.invokeLater(() -> {
-            try {
-                new Start().startMain();
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        });
-
-        // Math.abs(0);
-        // System.exit(0);
-        // Object.toString()
-
-    }
 
     public void startMain() throws Exception {
         JMenuBar gameMenuBar = new JMenuBar();
@@ -48,31 +38,26 @@ public class Start {
         gameFrame.setLocationRelativeTo(null); // 窗口居中
         gameFrame.setVisible(true);
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        gameFrame.setContentPane(new Game());
+            game = new Game();
+        gameFrame.setContentPane(game);
 
     }
 
     public void menuBarSettings(JMenuBar menuBar) {
-        JMenu Setting = new JMenu("设置");
+        JMenu setting = new JMenu("设置");
         {
             JMenuItem exit = new JMenuItem("退出");
-            exit.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    System.exit(0);
-                }
-            });
-            Setting.add(exit);
+            exit.addActionListener(e -> System.exit(0));
+            setting.add(exit);
 
-            JMenuItem restart = new JMenuItem("重新开始");
-            restart.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
+            JMenuItem restart = new JMenuItem("重新开始当前游戏");
+            restart.addActionListener(e -> {
                     gameFrame.remove(gameFrame.getContentPane());
 
                     SwingUtilities.invokeLater(() -> {
                         try {
-                            gameFrame.setContentPane(new Game());
+                            game = new Game();
+                            gameFrame.setContentPane(game);
                             gameFrame.revalidate();
                             gameFrame.repaint();
                         } catch (Exception e1) {
@@ -82,10 +67,19 @@ public class Start {
                     });
    
                 }
+            );
+            setting.add(restart);
+
+            JMenuItem resetting = new JMenuItem("重新开始一个新游戏");
+            resetting.addActionListener(e -> {
+                if(game != null){
+                    game.restartNewConfigingGame();
+                }        
             });
-            Setting.add(restart);
+            setting.add(resetting);
         }
 
-        menuBar.add(Setting);
+        menuBar.add(setting);
     }
+
 }

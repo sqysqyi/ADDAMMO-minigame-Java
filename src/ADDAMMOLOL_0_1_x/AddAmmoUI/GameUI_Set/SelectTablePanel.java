@@ -17,10 +17,10 @@ import javax.swing.event.DocumentListener;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Game;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Start;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionsLib;
-import ADDAMMOLOL_0_1_x.AddAmmoUI.TextChangeListener;
+
 import ADDAMMOLOL_0_1_x.AddAmmoUI.initUI;
 
-public class SelectTablePanel extends JPanel implements initUI {
+public final class SelectTablePanel extends JPanel implements initUI {
     JTextField playerInputTextField;
     JPanel tablePanel;
     JLabel[][] tableElements = new JLabel[9][4];
@@ -153,5 +153,11 @@ public class SelectTablePanel extends JPanel implements initUI {
             // 输入不是数字，不进行高亮
         } 
     }
+
+    public interface TextChangeListener {
+    
+        public void onTextChanged(String textInput);
+    }
+
 
 }

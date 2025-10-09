@@ -10,7 +10,7 @@ import ADDAMMOLOL_0_1_x.AddAmmoUI.initUI;
 
 import java.awt.Color;
 
-public class PlayerStatsPanel extends JPanel implements initUI,Updatable{
+public final class PlayerStatsPanel extends JPanel implements initUI,Updatable{
     JLabel playerStatsTitleLabel,enemyStatsTitleLabel;
     JLabel playerHP_Label,enemyHP_Label;
     JLabel playerAmmoleftLabel,enemyAmmoLeftLabel ;
