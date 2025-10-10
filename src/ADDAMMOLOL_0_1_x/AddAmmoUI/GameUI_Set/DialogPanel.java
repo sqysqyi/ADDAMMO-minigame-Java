@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
@@ -74,7 +75,11 @@ public final class DialogPanel extends JPanel{
         add(buttonPanel, BorderLayout.SOUTH);
 
         confirmButton.addActionListener(e -> {
-            //暂时还没想好，先不写
+            JOptionPane.showMessageDialog(
+                this,
+                "Unsupported options, coming soon?",
+                "Sorry...",
+                JOptionPane.ERROR_MESSAGE);
             //onConfirmClicked();
         });
         cancelButton.addActionListener(e ->{

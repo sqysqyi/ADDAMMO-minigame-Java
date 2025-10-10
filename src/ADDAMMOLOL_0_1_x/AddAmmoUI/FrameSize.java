@@ -33,5 +33,13 @@ public interface FrameSize {
 
     public static final int LP_SIZE_W = Frame_SIZE_WIDTH;
 
+    //specailized for StartingMenuPanel.java
+    public static final int EMPTY_PANEL_WIDTH = Frame_SIZE_WIDTH/3;
+
+    public static final int EMPTY_PANEL_HEIGHT = Frame_SIZE_HEIGHT/4;
+
+    public static final int BUTTONAREA_WIDTH = Frame_SIZE_WIDTH/3;
+
+    public static final int BOTTOM_GAP = Frame_SIZE_HEIGHT *2/3 - EMPTY_PANEL_HEIGHT; 
     
 }

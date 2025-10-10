@@ -32,6 +32,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
     PlayerStatsPanel playerStatsPanel;
     SelectTablePanel selectTablePanel;
     JPanel secendPanel;
+    DialogPanel restartNew ;
 
     // 逻辑参数声明
     private Actions playerActions, enemyActions, enemy2Actions, enemy3Actions;
@@ -486,7 +487,12 @@ public class Game extends JPanel implements FrameSize, ActionListener {
     }
 
     public void restartNewConfigingGame(){
-        DialogPanel restartNew = new DialogPanel("Are you sure to restart a new game? ");
+        
+        if(restartNew != null){
+            remove(restartNew);
+        }//防止在重新配置新游戏的界面重复点击创建新游戏导致重复生成对话框
+
+        restartNew = new DialogPanel("Are you sure to restart a new game? ");
 
         restartNew.addButtonSelectingListener(new ButtonSelectingListener() {
             @Override
