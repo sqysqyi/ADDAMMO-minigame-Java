@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Game;
-import ADDAMMOLOL_0_1_x.AddAmmoMain.GameStats;
-import ADDAMMOLOL_0_1_x.AddAmmoMain.PlayerStats;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Actions;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionStats;
 
 public class Enemy extends Players {
     private int selectedActionID;
@@ -21,13 +20,13 @@ public class Enemy extends Players {
         //super(HP, ammoLeft, dangerous, legit, isSteal, isMissileSettled, playerNameString);
     }
     
-    public Enemy(int HP, int ammoLeft,PlayerStats playerActionStats, GameStats enemyGameStats, Actions enemyActions, String playerNameString) {
+    public Enemy(int HP, int ammoLeft,PlayerStats playerActionStats, ActionStats enemyGameStats, Actions enemyActions, String playerNameString) {
         super(HP, ammoLeft,playerActionStats, enemyGameStats, enemyActions, playerNameString);
         //TODO Auto-generated constructor stub
     }
 
     @Override
-    public int actionsSelecting(int opponentHP_left, int opponentAmmoLeft, GameStats opponentGameStats){
+    public int actionsSelecting(int opponentHP_left, int opponentAmmoLeft, ActionStats opponentGameStats){
         
         actionsIdSelectionPool.clear();
         //actionsIdSelectionPool.trimToSize();;

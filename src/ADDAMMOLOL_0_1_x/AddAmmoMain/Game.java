@@ -13,8 +13,10 @@ import javax.swing.border.LineBorder;
 
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Actions;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionsLib;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionStats;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.Enemy;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.Player;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.PlayerStats;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.Players;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.FrameSize;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.GameUI_Set.*;
@@ -38,7 +40,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
     private Actions playerActions, enemyActions, enemy2Actions, enemy3Actions;
     private Players player, enemy, enemy2, enemy3;
     private PlayerStats playerStats, enemyStats, enemy2Stats, enemy3Stats;
-    private GameStats playerGameStats, enemyGameStats, enemy2GameStats, enemy3GameStats;
+    private ActionStats playerGameStats, enemyGameStats, enemy2GameStats, enemy3GameStats;
     private int binusDamage;
 
     public static final int MAX_HP = 3;
@@ -100,7 +102,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
     // 初始化玩家属性
     public void initPlayer(int totalPlayer) throws Exception {
         playerStats = new PlayerStats();
-        playerGameStats = new GameStats();
+        playerGameStats = new ActionStats();
         player = new Player(MAX_HP, DEFAULT_AMMO,
                 playerStats,
                 playerGameStats,
@@ -111,7 +113,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
         switch (totalPlayer) {
             case 4:
                 enemy3Stats = new PlayerStats();
-                enemy3GameStats = new GameStats();
+                enemy3GameStats = new ActionStats();
                 enemy3 = new Enemy(MAX_HP, DEFAULT_AMMO,
                         enemy3Stats,
                         enemy3GameStats,
@@ -120,7 +122,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
             case 3:
                 enemy2Stats = new PlayerStats();
-                enemy2GameStats = new GameStats();
+                enemy2GameStats = new ActionStats();
                 enemy2 = new Enemy(MAX_HP, DEFAULT_AMMO,
                         enemy2Stats,
                         enemy2GameStats,
@@ -129,7 +131,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                 throw new Exception("unsupported player numbers, only \"2\" is ok...");
             case 2:
                 enemyStats = new PlayerStats();
-                enemyGameStats = new GameStats();
+                enemyGameStats = new ActionStats();
                 enemy = new Enemy(MAX_HP, DEFAULT_AMMO,
                         enemyStats,
                         enemyGameStats,

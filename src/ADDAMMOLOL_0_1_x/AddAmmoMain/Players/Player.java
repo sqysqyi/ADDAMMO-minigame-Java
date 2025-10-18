@@ -2,9 +2,8 @@ package ADDAMMOLOL_0_1_x.AddAmmoMain.Players;
 
 import java.util.Scanner;
 
-import ADDAMMOLOL_0_1_x.AddAmmoMain.GameStats;
-import ADDAMMOLOL_0_1_x.AddAmmoMain.PlayerStats;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Actions;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionStats;
 
 public class Player extends Players {
     
@@ -15,7 +14,7 @@ public class Player extends Players {
         //playerActions = new actions();
     }//空参构造
     public Player(int HP, int ammoLeft, PlayerStats playerActionStats, 
-                    GameStats playerGameStats, Actions playerActions, String playerNameString) {
+                    ActionStats playerGameStats, Actions playerActions, String playerNameString) {
         //playerActions = new actions();
         super(HP, ammoLeft, playerActionStats, playerGameStats, playerActions, playerNameString);
         
@@ -33,7 +32,7 @@ public class Player extends Players {
     }//never used seems :D
 
     @Override
-    public int actionsSelecting(int playerInput,int playerAmmoLeft,GameStats playerGameStats){
+    public int actionsSelecting(int playerInput,int playerAmmoLeft,ActionStats playerGameStats){
         int selectedActionID;
         if(playerAmmoLeft < this.selectActions(playerInput).getAmmoCost()){
             selectedActionID = -1;

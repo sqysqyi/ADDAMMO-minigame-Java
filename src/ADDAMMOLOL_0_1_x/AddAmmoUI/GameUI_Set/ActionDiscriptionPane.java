@@ -34,7 +34,7 @@ public final class ActionDiscriptionPane extends JScrollPane implements initUI {
         if(ActionsLib.searchActions(ID) != null){
             discriptionArea.setText("Action ID: "+ID + "\n"+
                                     "Action name: " + ActionsLib.getActionName(ID) + "\n"+
-                                    "Action discription: "+ ActionsLib.searchActionsDiscription(ID));              
+                                    "Action discription: "+ ActionsLib.searchActionDescription(ID));              
         }else{
             discriptionArea.setText("null");
         }

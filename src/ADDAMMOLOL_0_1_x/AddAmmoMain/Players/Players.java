@@ -3,16 +3,15 @@ package ADDAMMOLOL_0_1_x.AddAmmoMain.Players;
 import java.util.Scanner;
 
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Game;
-import ADDAMMOLOL_0_1_x.AddAmmoMain.GameStats;
-import ADDAMMOLOL_0_1_x.AddAmmoMain.PlayerStats;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Actions;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionsLib;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionStats;
 import ADDAMMOLOL_0_1_x.AddAmmoUtil.RNGenerator;
 
 public abstract class Players {
     private int HP,ammoLeft;
     private PlayerStats playerStats;
-    private GameStats gameStats;
+    private ActionStats gameStats;
     private String playerNameString;
     private Actions playerActions;
 
@@ -21,7 +20,7 @@ public abstract class Players {
 
     }
     public Players(int HP, int ammoLeft, PlayerStats playerStats,
-                    GameStats gameStats, Actions playerActions, String playerNameString){
+                    ActionStats gameStats, Actions playerActions, String playerNameString){
         this.HP = HP;
         this.ammoLeft = ammoLeft;
         this.playerStats = new PlayerStats();
@@ -29,10 +28,10 @@ public abstract class Players {
         this.playerNameString = playerNameString;
     }
 
-    public GameStats getGameStats() {
+    public ActionStats getGameStats() {
         return gameStats;
     }
-    public void setGameStats(GameStats gameStats) {
+    public void setGameStats(ActionStats gameStats) {
         this.gameStats = gameStats;
     }
     public PlayerStats getPlayerStats() {
@@ -134,7 +133,7 @@ public abstract class Players {
         }
     }
 
-    public abstract int actionsSelecting(int optional_Index, int AmmoLeft, GameStats GameStats);
+    public abstract int actionsSelecting(int optional_Index, int AmmoLeft, ActionStats GameStats);
 
     public static Players dangerousComparing(Players player1,Players player2){
         Players winPlayer = null;
