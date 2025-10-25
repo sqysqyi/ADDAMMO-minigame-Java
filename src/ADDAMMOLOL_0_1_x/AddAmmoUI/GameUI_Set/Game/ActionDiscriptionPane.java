@@ -1,4 +1,4 @@
-package ADDAMMOLOL_0_1_x.AddAmmoUI.GameUI_Set;
+package ADDAMMOLOL_0_1_x.AddAmmoUI.GameUI_Set.Game;
 
 import java.awt.Color;
 import java.awt.Font;

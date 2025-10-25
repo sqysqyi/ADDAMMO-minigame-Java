@@ -9,6 +9,13 @@
             "name": "Main",
             "request": "launch",
             "mainClass": "ADDAMMOLOL_0_1_x.Main",
+            "projectName": "ADDAMMO-minigame-Java_db62b614"
+        },
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "ADDAMMOLOL_0_1_x.Main",
             "projectName": "AddAmmo_95fb4fd7"
         },
         {

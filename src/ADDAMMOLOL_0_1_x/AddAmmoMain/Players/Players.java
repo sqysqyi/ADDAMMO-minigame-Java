@@ -3,6 +3,7 @@ package ADDAMMOLOL_0_1_x.AddAmmoMain.Players;
 import java.util.Scanner;
 
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Game;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Start;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Actions;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionsLib;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionStats;
@@ -123,7 +124,7 @@ public abstract class Players {
     }
     public void checkHealing(int damageReceived){
         if(this.playerActions.getID() == 701 ){
-            if(damageReceived <= 0 && this.HP < Game.MAX_HP){
+            if(damageReceived <= 0 && this.HP < Start.setMaxHP){
                 this.HP += 1;
                 System.out.println("debug");
             }else if(damageReceived > 0){

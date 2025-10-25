@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Game;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Start;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Actions;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionStats;
 
@@ -47,7 +48,7 @@ public class Enemy extends Players {
             actionsIdSelectionPool.add(601);//最好开一炮
             
             
-            if(this.getHP() < Game.MAX_HP){
+            if(this.getHP() < Start.setMaxHP){
                 actionsIdSelectionPool.add(701);//试图回血
             }
         }else{//玩家有子弹！

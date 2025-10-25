@@ -9,7 +9,6 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
 import ADDAMMOLOL_0_1_x.AddAmmoUI.FrameSize;
@@ -91,7 +90,7 @@ public class StartingMenuPanel extends JPanel implements initUI{
                 @Override
                 public void mouseExited(MouseEvent e) {
                     // TODO Auto-generated method stub
-                    startLabel.setText("Start! ");
+                    startLabel.setText("Start!");
                     //startPanel.setBackground(Color.WHITE);
                     startReady = false;
                 }
@@ -168,8 +167,8 @@ public class StartingMenuPanel extends JPanel implements initUI{
 
     public interface StartingButtonsListener {
         
-        default void startButtonClicked(){};
-        default void configButtonClicked(){};
+        void startButtonClicked();;
+        void configButtonClicked();;
         
     }
     public void addStartingButtonsListener(StartingButtonsListener listener){

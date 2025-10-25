@@ -1,6 +1,8 @@
 package ADDAMMOLOL_0_1_x.AddAmmoMain;
 
-import javax.swing.JDialog;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -8,6 +10,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import ADDAMMOLOL_0_1_x.AddAmmoUI.GameUI_Set.GameConfigPanel;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.GameUI_Set.StartingMenuPanel;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.GameUI_Set.StartingMenuPanel.StartingButtonsListener;
 
@@ -15,9 +18,16 @@ public class Start {
     public static int FRAME_HEIGHT = 600;
     public static int FRAME_WIDTH = 800;
     public static final String version = "0.1.0";
+    
 
     public Game game;
-    public StartingMenuPanel startingMenuPanel;
+    private StartingMenuPanel startingMenuPanel;
+    private GameConfigPanel configPanel;
+
+    public static int setMaxHP = 3;
+    public static int setDefaultAmmo = 1;
+    public static final int setMaxPlayers = 2;
+
 
     JFrame gameFrame = new JFrame("ADD AMMO v" + version);
 
@@ -41,17 +51,7 @@ public class Start {
                 @Override
                 public void startButtonClicked(){
                     gameFrame.remove(startingMenuPanel);
-                    SwingUtilities.invokeLater(() ->{
-                        try {
-                            game = new Game();
-                            gameFrame.setContentPane(game);
-                            gameFrame.revalidate();
-                            gameFrame.repaint();
-                        } catch (Exception e1) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
-                        }
-                    });
+                    restartGames();
                 }
                 @Override
                 public void configButtonClicked(){
@@ -75,19 +75,9 @@ public class Start {
 
             JMenuItem restart = new JMenuItem("重新开始当前游戏");
             restart.addActionListener(e -> {
-                    gameFrame.remove(gameFrame.getContentPane());
+                if(game != null) gameFrame.remove(gameFrame.getContentPane());
 
-                    SwingUtilities.invokeLater(() -> {
-                        try {
-                            game = new Game();
-                            gameFrame.setContentPane(game);
-                            gameFrame.revalidate();
-                            gameFrame.repaint();
-                        } catch (Exception e1) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
-                        }
-                    });
+                    restartGames();
    
                 }
             );
@@ -95,10 +85,34 @@ public class Start {
 
             JMenuItem resetting = new JMenuItem("重新开始一个新游戏");
             resetting.addActionListener(e -> {
-                if(game != null){
-                    gameFrame.remove(gameFrame.getContentPane());
-                    game.restartNewConfigingGame();
-                }        
+                if(game != null) {
+                    //gameFrame.remove(gameFrame.getContentPane());
+                    game.setSubCompVisible(false);
+
+                    game.setLayout(new FlowLayout());
+                    DialogPanel newGameConfigDialog = new DialogPanel("Are you sure to restart a new game? ");
+                    newGameConfigDialog.addButtonSelectingListener(new DialogPanel.ButtonSelectingListener() {
+
+                        @Override
+                        public void onConfirmClicked() {
+                            game.startNewConfigGame_From(newGameConfigDialog);
+                            configPanel = new GameConfigPanel();
+                            configPanel.addConfigConfirmListener(() ->{
+                                gameFrame.remove(gameFrame.getContentPane());
+                                
+                                restartGames();
+                            });
+                            game.add(configPanel);
+                        }
+
+                        @Override
+                        public void onCancelClicked() {
+                            game.continueGame_From(newGameConfigDialog);
+                        }
+                        
+                    });
+                    game.add(newGameConfigDialog);
+                }      
             });
             setting.add(resetting);
         }
@@ -106,4 +120,17 @@ public class Start {
         menuBar.add(setting);
     }
 
+    private void restartGames() {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                game = new Game();
+                gameFrame.setContentPane(game);
+                gameFrame.revalidate();
+                gameFrame.repaint();
+            } catch (Exception e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+        });
+    }
 }

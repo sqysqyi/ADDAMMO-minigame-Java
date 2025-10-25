@@ -1,4 +1,4 @@
- package ADDAMMOLOL_0_1_x.AddAmmoUI;
+package ADDAMMOLOL_0_1_x.AddAmmoUI;
 
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.*;; 
 

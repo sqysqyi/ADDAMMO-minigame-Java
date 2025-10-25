@@ -1,9 +1,10 @@
-package ADDAMMOLOL_0_1_x.AddAmmoUI.GameUI_Set;
+package ADDAMMOLOL_0_1_x.AddAmmoUI.GameUI_Set.Game;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Game;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Start;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.*;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.Updatable;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.initUI;
@@ -33,20 +34,20 @@ public final class PlayerStatsPanel extends JPanel implements initUI,Updatable{
         enemyStatsTitleLabel = new JLabel("Enemy Stats");
             enemyStatsTitleLabel.setForeground(Color.WHITE);
             
-        playerHP_Label = new JLabel("HP: " + Game.MAX_HP);
+        playerHP_Label = new JLabel("HP: " +Start.setMaxHP );
             playerHP_Label.setForeground(Color.WHITE);
             //playerHP_Label.setAlignmentX(Component.CENTER_ALIGNMENT);
             //playerHP_Label.setHorizontalAlignment(SwingConstants.CENTER);        
 
-        enemyHP_Label = new JLabel("HP: " + Game.MAX_HP);
+        enemyHP_Label = new JLabel("HP: " + Start.setMaxHP);
             enemyHP_Label.setForeground(Color.WHITE);
               
-        playerAmmoleftLabel = new JLabel("Ammo: " + Game.DEFAULT_AMMO );
+        playerAmmoleftLabel = new JLabel("Ammo: " + Start.setDefaultAmmo );
             playerAmmoleftLabel.setForeground(Color.WHITE);
             //playerAmmoleftLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             //playerAmmoleftLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        enemyAmmoLeftLabel = new JLabel("Ammo: " + Game.DEFAULT_AMMO);
+        enemyAmmoLeftLabel = new JLabel("Ammo: " + Start.setDefaultAmmo);
             enemyAmmoLeftLabel.setForeground(Color.WHITE);
 
         playerSelectedActionLabel = new JLabel("Action: It's your turn"  );
