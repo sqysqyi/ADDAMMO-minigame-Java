@@ -175,4 +175,8 @@ public class StartingMenuPanel extends JPanel implements initUI{
         this.startingButtonsListener = listener;
     }
 
+    public void setSubCompVisible(boolean setVisible){
+        
+    }
+
 }
