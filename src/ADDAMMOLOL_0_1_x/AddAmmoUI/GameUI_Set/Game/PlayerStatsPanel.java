@@ -3,7 +3,6 @@ package ADDAMMOLOL_0_1_x.AddAmmoUI.GameUI_Set.Game;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import ADDAMMOLOL_0_1_x.AddAmmoMain.Game;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Start;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.*;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.Updatable;

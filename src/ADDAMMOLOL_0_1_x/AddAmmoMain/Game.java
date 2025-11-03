@@ -36,7 +36,6 @@ public class Game extends JPanel implements FrameSize, ActionListener {
     private Actions playerActions, enemyActions, enemy2Actions, enemy3Actions;
     private Players player, enemy, enemy2, enemy3;
     private PlayerStats playerStats, enemyStats, enemy2Stats, enemy3Stats;
-    private ActionStats playerGameStats, enemyGameStats, enemy2GameStats, enemy3GameStats;
     private int bonusDamage;
 
     private int MAX_HP = Start.setMaxHP == 0 ? 3 : Start.setMaxHP;
@@ -87,7 +86,9 @@ public class Game extends JPanel implements FrameSize, ActionListener {
     public void initGame() {
 
         player.getPlayerStats().resetDmgDefThief();
+        player.getPlayerStats().resetAllSettlements();
         enemy.getPlayerStats().resetDmgDefThief();
+        enemy.getPlayerStats().resetAllSettlements();
 
         bonusDamage = 0;
         isGameOver = false;
@@ -107,39 +108,30 @@ public class Game extends JPanel implements FrameSize, ActionListener {
             DEFAULT_AMMO = 1;
 
         playerStats = new PlayerStats();
-        playerGameStats = new ActionStats();
         player = new Player(MAX_HP, DEFAULT_AMMO,
                 playerStats,
-                playerGameStats,
                 playerActions,
                 "player");
-        // actions playerActions = new actions();
 
         switch (totalPlayer) {
             case 4:
                 enemy3Stats = new PlayerStats();
-                enemy3GameStats = new ActionStats();
                 enemy3 = new Enemy(MAX_HP, DEFAULT_AMMO,
                         enemy3Stats,
-                        enemy3GameStats,
                         enemy3Actions,
                         "enemy3");
 
             case 3:
                 enemy2Stats = new PlayerStats();
-                enemy2GameStats = new ActionStats();
                 enemy2 = new Enemy(MAX_HP, DEFAULT_AMMO,
                         enemy2Stats,
-                        enemy2GameStats,
                         enemy2Actions,
                         "enemy2");
                 throw new Exception("unsupported player numbers, only \"2\" is ok...");
             case 2:
                 enemyStats = new PlayerStats();
-                enemyGameStats = new ActionStats();
                 enemy = new Enemy(MAX_HP, DEFAULT_AMMO,
                         enemyStats,
-                        enemyGameStats,
                         enemyActions,
                         "enemy");
                 break;
@@ -206,7 +198,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
             enemy.getPlayerStats().resetDmgDefThief();
             bonusDamage = 0;
         }
-        System.out.println(bonusDamage);
+        //System.out.println(bonusDamage);
         logPanel.updateLog(
                 LogPanel.AT_FIRST,
                 "Round: " + ++round,
@@ -220,7 +212,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
         playerActions = player.selectActions(playerSelectedActionID);
         player.setPlayerActions(playerActions);// 玩家选择的action
 
-        int enemySelectedActionID = enemy.actionsSelecting(player.getHP(), player.getAmmoLeft(), playerGameStats);
+        int enemySelectedActionID = enemy.actionsSelecting(player.getHP(), player.getAmmoLeft(), playerStats);
         enemyActions = enemy.selectActions(enemySelectedActionID);
         enemy.setPlayerActions(enemyActions);// enemy电脑自动选择action
 
@@ -247,7 +239,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
             enemy.checkHealing(0);
 
         } else {
-            System.out.println("开始判断危险人物");
+            //System.out.println("开始判断危险人物");
             lessDangerousPlayer = moreDangerousPlayer == player ? enemy : player;
             moreDangerousPlayer.winActivating();
 
@@ -443,8 +435,8 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                 }
 
                 int actionID = Integer.parseInt(input);
-                int preSelections = player.actionsSelecting(actionID, player.getAmmoLeft(), player.getGameStats());
-                if (preSelections == -1) {
+                int preSelections = player.actionsSelecting(actionID, player.getAmmoLeft(), player.getPlayerStats());
+                if (preSelections == -1) {//返回-1代表子弹不足
                     String msg = "Failed to active the selected action: "
                             + ActionsLib.searchActions(actionID).getActionNameString() + " ,Because you have "
                             + player.getAmmoLeft() +

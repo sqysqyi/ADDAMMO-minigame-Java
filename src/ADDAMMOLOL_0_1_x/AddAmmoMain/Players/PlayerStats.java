@@ -4,20 +4,34 @@ package ADDAMMOLOL_0_1_x.AddAmmoMain.Players;
 public class PlayerStats {
     private int rawDmg,rawDef;
     private boolean isThief,isPolice,isEngineer;
+    private boolean isMissileSettled,isMineReady;
+
+    public boolean isMissileSettled() {
+        return isMissileSettled;
+    }
+
+    public void setMissileSettled(boolean isMissileSettled) {
+        this.isMissileSettled = isMissileSettled;
+    }
+
+    public boolean isMineReady() {
+        return isMineReady;
+    }
+
+    public void setMineReady(boolean isMineReady) {
+        this.isMineReady = isMineReady;
+    }
 
     //记录玩家的每回合输出的状态，便于进行比较
     //包括 玩家将要造成的伤害，获得的防御，是否是小偷、警察和工程师的属性
-    public PlayerStats(){
-        resetDmgDefThief();
-    }
 
-    public PlayerStats(int rawDmg, int rawDef, boolean isThief, boolean isPolice, boolean isEngineer) {
+    /*public PlayerStats(int rawDmg, int rawDef, boolean isThief, boolean isPolice, boolean isEngineer) {
         this.rawDmg = rawDmg;
         this.rawDef = rawDef;
         this.isThief = isThief;
         this.isPolice = isPolice;
         this.isEngineer = isEngineer;
-    }
+    }*/
 
     public int getRawDmg() {
         return rawDmg;
@@ -59,12 +73,22 @@ public class PlayerStats {
         this.isEngineer = isEngineer;
     }
 
+    public PlayerStats(){
+        resetDmgDefThief();
+        resetAllSettlements();
+    }
+
     public void resetDmgDefThief(){
         this.setRawDmg(0);
         this.setRawDef(0);
         this.setThief(false);
         this.setPolice(false);
         this.setEngineer(false);
+    }
+
+    public void resetAllSettlements(){
+        this.setMissileSettled(false);
+        this.setMineReady(false);
     }
 
     
