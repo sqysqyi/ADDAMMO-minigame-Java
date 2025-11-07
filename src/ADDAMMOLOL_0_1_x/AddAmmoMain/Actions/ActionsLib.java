@@ -1,5 +1,14 @@
 package ADDAMMOLOL_0_1_x.AddAmmoMain.Actions;
 
+//所有可能会对对手造成伤害的actions的dangerous属性必须为正值；
+//所有绝对不可能使players成为 more dangerous player的actions应该为dangerous 为-1；
+//所有警察小偷系列的legit属性不可为0
+//->这就引出来所有警察legit值必须为正值
+//->所有小偷的legit值必须为负值，对应actions正义/盗窃程度越高，值的绝对值越大
+
+//specific sign作用暂定
+//
+
 public enum ActionsLib{
     ADD_AMMO(
         101,"Add ammo",-1,-1,0,-1,true,0,0,

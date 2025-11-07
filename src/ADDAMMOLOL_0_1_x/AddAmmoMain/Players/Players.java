@@ -67,8 +67,10 @@ public abstract class Players {
     public void checkIsSteal_or_Police(){
         if(this.getPlayerActions().getLegit() < 0 && !this.playerStats.isPolice()){
             this.playerStats.setThief(true);
+            this.playerStats.setPolice(false);
         }else if(this.getPlayerActions().getLegit() > 0 && !this.playerStats.isThief()){
             this.playerStats.setPolice(true);
+            this.playerStats.setThief(false);
         }   
     }
     
@@ -91,7 +93,7 @@ public abstract class Players {
     public void generalActivating(){
         this.playerStats.setRawDef(this.getPlayerActions().getRawDef());
 
-        int ammoleft = this.getAmmoLeft()-this.getPlayerActions().getAmmoCost();
+        int ammoleft = this.getAmmoLeft() - this.getPlayerActions().getAmmoCost();
         this.setAmmoLeft(ammoleft);
         this.checkIsSteal_or_Police();
     }
@@ -99,12 +101,6 @@ public abstract class Players {
     public void winActivating(){
         //player.setRawDef(playerActions.getRawDef());
         this.playerStats.setRawDmg(this.getPlayerActions().getRawDmg());
-
-        if(this.getPlayerActions().getLegit() < 0){
-            this.playerStats.setThief(true);
-        }else if(this.getPlayerActions().getLegit() > 0){
-            this.playerStats.setPolice(true);
-        }
         
     }    
     public void ammoRetureTo(Players player){//return your ammo as succeed in stealing enemy's non_addammo actions
@@ -126,9 +122,8 @@ public abstract class Players {
 
     public abstract int actionsSelecting(int optional_Index, int AmmoLeft, PlayerStats playerStats);
 
-    public static Players dangerousComparing(Players player1,Players player2){
-        Players winPlayer = null;
-        if(player1.getPlayerActions().getDangerous() > 0){//都有危险性，必须要打
+    public static Players Comparing(Players player1,Players player2){
+        /*if(player1.getPlayerActions().getDangerous() > 0){//都有危险性，必须要打
             if(player2.getPlayerActions().getDangerous() > player1.getPlayerActions().getDangerous()){//有实力，但没比过
                 winPlayer = player2;
             }
@@ -164,9 +159,57 @@ public abstract class Players {
                 winPlayer = player2;
             }
         }
-        return winPlayer;
+        return winPlayer;*/
+        int player1Dangerous = player1.getPlayerActions().getDangerous();
+        int player2Dangerous = player2.getPlayerActions().getDangerous();
+
+        if(PlayerStats.equalWithOnce(player1.getPlayerStats(), player2.getPlayerStats())) return null;//先把同行剔除
+        if(player1Dangerous > player2Dangerous){
+            if(player1.getPlayerStats().isPolice()){
+                //***add exceptional rules below: */
+                //if(player2.getPlayerActions().getID() == 701) return null;
+                if(player2.getPlayerStats().isEngineer()) return null;
+                if(player2Dangerous <= 0) return null;
+                /************* */
+                return player1;
+            }else if(player1.getPlayerStats().isThief()){
+                /****add exceptional rules below: */
+                //if(player2.getPlayerStats().isThief()) return null;
+                /************* */
+                return player1;
+            }else{
+                return player1;
+            }
+        }else if(player1Dangerous == player2Dangerous){
+            if(player1Dangerous <= 0) return null;
+            else {
+                //****add exceptional rules below: */
+                
+                /************** */
+                RNGenerator.isActivated = true;
+                return RNGenerator.rateGenerator(50)?player1:player2;
+
+            }
+        }else{
+            if(player2.getPlayerStats().isPolice()){
+                //***add exceptional rules below: */
+                //if(player1.getPlayerStats().isPolice()) return null;
+                if(player1.getPlayerStats().isEngineer()) return null;
+                if(player1Dangerous <= 0) return null;
+                /************* */
+                return player2;
+            }else if(player2.getPlayerStats().isThief()){
+                //***exceptional rules below: */
+                //if(player1.getPlayerStats().isThief()) return null;
+                /************* */
+                return player2;
+            }else{
+                return player2;
+            }
+
+        }
     }
-    
+
     @Override
     public String toString(){
         

@@ -1,5 +1,6 @@
 package ADDAMMOLOL_0_1_x.AddAmmoMain.Players;
 
+import Samples.ADDAMMOLOL_0_0_1d.playerStats;
 
 public class PlayerStats {
     private int rawDmg,rawDef;
@@ -91,7 +92,13 @@ public class PlayerStats {
         this.setMineReady(false);
     }
 
-    
+    public static boolean equalWithOnce(PlayerStats player1Stats, PlayerStats player2Stats){
+
+        if(player1Stats.isEngineer == player2Stats.isEngineer && player1Stats.isEngineer == true) return true;
+        if(player1Stats.isPolice == player2Stats.isPolice && player1Stats.isPolice == true) return true;
+        if(player1Stats.isThief == player2Stats.isThief && player1Stats.isPolice == true) return true;
+        return false;
+    }
     
 }
     

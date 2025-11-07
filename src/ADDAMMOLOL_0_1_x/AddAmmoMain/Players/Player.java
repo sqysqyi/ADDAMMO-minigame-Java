@@ -28,13 +28,14 @@ public class Player extends Players {
 
     @Override
     public int actionsSelecting(int playerInput,int playerAmmoLeft,PlayerStats playerStats){
-        int selectedActionID;
         if(playerAmmoLeft < this.selectActions(playerInput).getAmmoCost()){
-            selectedActionID = -1;
+            return -1;
+        }else if(playerInput == 602 && !playerStats.isMissileSettled()){//failing launch missile with no launcher settled
+            return -2;
         }else{
-            selectedActionID = playerInput;
+            return playerInput;
         }
-        return selectedActionID;
+        
     }//虽然我知道这东西有点多余
 
 }
