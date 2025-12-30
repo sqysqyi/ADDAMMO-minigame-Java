@@ -1,7 +1,7 @@
 package ADDAMMOLOL_0_1_x.AddAmmoUtil;
 import java.util.Random;
 
-public class RNGenerator {
+public class AM_RNGenerator {
     public static boolean isActivated = false;
     
     public static boolean rateGenerator(double rateBetweenOneToHundred){

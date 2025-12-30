@@ -1,124 +1,123 @@
 package ADDAMMOLOL_0_1_x.AddAmmoMain.Players;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
-
-import ADDAMMOLOL_0_1_x.AddAmmoMain.Start;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Actions;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionsLib;
+import ADDAMMOLOL_0_1_x.AddAmmoUtil.AM_Recorder;
 
 public class Enemy extends Players {
-    private int selectedActionID;
-    private ArrayList<Integer> actionsIdSelectionPool = new ArrayList<Integer>();
+    private int selectedActionID, ambitiousActionID;
+    private AM_Recorder recorder;
+    // private ArrayList<Integer> actionSelectPool;
+    private HashMap<Actions, Integer> weightMap;
 
-    //private final int group_num = 3;
-    //private final int type_num = 1; 
-    
-    
-    public Enemy(){
+    public Enemy() {
         super();
-        //super(HP, ammoLeft, dangerous, legit, isSteal, isMissileSettled, playerNameString);
-    }
-    
-    public Enemy(int HP, int ammoLeft,PlayerStats playerStats, Actions enemyActions, String playerNameString) {
-        super(HP, ammoLeft,playerStats, enemyActions, playerNameString);
-        //TODO Auto-generated constructor stub
+        // super(HP, ammoLeft, dangerous, legit, isSteal, isMissileSettled,
+        // playerNameString);
     }
 
+    public Enemy(int HP, int ammoLeft, Actions enemyActions, String playerNameString) {
+        super(HP, ammoLeft,  enemyActions, playerNameString);
+        init();
+
+    }
+
+    // actionsSelecting() start below
     @Override
-    public int actionsSelecting(int opponentHP_left, int opponentAmmoLeft, PlayerStats opponentPlayerStats){
-        
-        actionsIdSelectionPool.clear();
-        //actionsIdSelectionPool.trimToSize();;
-        
-        Random rand = new Random();
-        //actionsIdSelectionPool.add(101);
-        //首要任务，见玩家的状态行事
+    public int actionsSelecting(int opponentHP_left, int opponentAmmoLeft, PlayerStats opponentPlayerStats) {
 
-        //action pool 常驻动作：
-        actionsIdSelectionPool.add(101);//add ammo
-        actionsIdSelectionPool.add(201);//shoot
-        //actionsIdSelectionPool.add(401);//steal
-        //actionsIdSelectionPool.add(501);//police
-        
-        if(opponentAmmoLeft == 0){//玩家没子弹
-            actionsIdSelectionPool.add(201);//愣着干啥？开枪！
-            actionsIdSelectionPool.add(202);//多开两枪
-            actionsIdSelectionPool.add(601);//最好开一炮
-            
-            
-            if(this.getHP() < Start.setMaxHP){
-                actionsIdSelectionPool.add(701);//试图回血
-            }
-        }else{//玩家有子弹！
-
-            actionsIdSelectionPool.add(301);//准备防御
-            actionsIdSelectionPool.add(201);
-            actionsIdSelectionPool.add(601);
-            actionsIdSelectionPool.add(401);//steal
-            actionsIdSelectionPool.add(501);//police
-            
-            if(this.getAmmoLeft() < 3){
-                actionsIdSelectionPool.add(101);//子弹少了，记得加点
-            }
-            int tempIndex = opponentAmmoLeft > 4?4:opponentAmmoLeft;
-            switch (tempIndex) {
-                case 4:
-                    actionsIdSelectionPool.add(402);
-                case 3:
-                    actionsIdSelectionPool.add(402);
-                case 2:
-                    actionsIdSelectionPool.add(502);
-                break;
-            }
+        if (ambitiousActionID == 0) {
+            createAmbitious();
         }
 
-        if(this.getAmmoLeft() > 1 && opponentAmmoLeft > 0){
-            actionsIdSelectionPool.add(501);
-            actionsIdSelectionPool.add(502);
-            if(opponentAmmoLeft > 2){
-                actionsIdSelectionPool.add(402);//子弹挺多啊，给你好好偷一下
-            }
-        }
-        if(this.getAmmoLeft() > 0 && opponentAmmoLeft > 1){
-            actionsIdSelectionPool.add(401);
-            actionsIdSelectionPool.add(402);
-        }
-        if(this.getHP() < 2){
-            actionsIdSelectionPool.add(701);
-            if(opponentAmmoLeft == 0){
-                actionsIdSelectionPool.add(701);
-            }
-        } 
-        
-        int actionsPoolIndex,preSelectedActionID;
+        guessing();
+        // then
+        /*
+         * 电脑AI设计
+         * 
+         */
 
-        System.out.printf("action selectinng pool comtains: ");        
-        for(int i = 0 ; i < actionsIdSelectionPool.size(); i++){
-            System.out.printf(" "+actionsIdSelectionPool.get(i));
-        }
-        System.out.println(" The action pool size is: "+actionsIdSelectionPool.size());
-
-        
-        while(true){
-            actionsPoolIndex = rand.nextInt(actionsIdSelectionPool.size());
-
-            preSelectedActionID = actionsIdSelectionPool.remove(actionsPoolIndex);
-
-            if(this.selectActions(preSelectedActionID).getAmmoCost() > this.getAmmoLeft() ){
-                System.out.printf("*");//retry
-                continue;
-            }else{
-                selectedActionID = preSelectedActionID;
-                break;
-            }
-        }
+        if (selectedActionID == ambitiousActionID)
+            ambitiousActionID = 0;// 若已选择的action和长期期望的一致，则可以将期望action重置
         return selectedActionID;
-        //return 701;//test part
     }
 
-    public int actionsSelecting(int useless){
-        return 0;
+    /**
+     * As how the game played in real life, we / i tended to keep an ambitious 
+     * action in mind. 
+     * Thats why this method exists here :)
+     * 
+     * At present, the way "guessing" the ambitious action is EXTREMELY low
+     * efficency, may improve days after?
+     */
+    private void createAmbitious() {
+        Random rand = new Random();
+        int preSelectActionID;
+        while (true) {
+            int groupIndex = rand.nextInt(9);
+            int itemIndex = rand.nextInt(3);
+
+            preSelectActionID = (groupIndex + 1) * 100 + itemIndex + 1;
+            // 排除条件如下：
+            if (ActionsLib.searchActions(preSelectActionID) == null)
+                continue;// 不存在的action舍弃
+            if (ActionsLib.getActionAmmoCost(preSelectActionID) < 2)
+                continue;// 子弹数小于2 的,拜托，有点追求好吧
+
+            break;
+        }
+        ambitiousActionID = preSelectActionID;
+
     }
 
+    /******************************************************************************************************* */
+
+    private final int for_tension = 0;
+    private final int for_instability = 1;
+    /**
+     * This method is designed for simulating how computer decide the next action
+     * would be
+     * 
+     * 
+     */
+    private void guessing() {
+        int[] reports = recorder.formReports();// [0]:tension;[1]:instability
+
+    }
+    /********************************************************************************************************* */
+// actionsSelecting() end here
+    private static final int DEFAULT_WEIGHT = 1;
+
+    private void init() {
+        weightMap = new HashMap<>();
+        for (Actions action : ActionsLib.getAll()) {
+            weightMap.put(action, DEFAULT_WEIGHT);
+        }
+        recorder = new AM_Recorder();
+        // actionSelectPool = new ArrayList<>();
+    }
+
+    public AM_Recorder getRecorder(){
+        return this.recorder;
+    }
     
+
+    public void grasping(GraspRequest graspRequest) {
+        graspRequest.graspTo(recorder);
+    }
+
+    public interface GraspRequest {
+        
+        void graspTo(AM_Recorder recorder);
+        /**
+         * local method used while enemy grasping round result
+         * @param winner from Game.java
+         * @return 1:enemy win, 0:tied, -1:this enemy lost
+         * @see AddAmmoMain.Game
+         */
+        int resultResolve();
+
+    }
 }

@@ -15,9 +15,12 @@ import javax.swing.border.LineBorder;
 
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.*;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.*;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.Enemy.GraspRequest;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.Players.PlayerStats;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.FrameSize;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.GameUI_Set.Game.*;
-import ADDAMMOLOL_0_1_x.AddAmmoUtil.RNGenerator;
+import ADDAMMOLOL_0_1_x.AddAmmoUtil.AM_RNGenerator;
+import ADDAMMOLOL_0_1_x.AddAmmoUtil.AM_Recorder;
 import Samples.ADDAMMOLOL_0_0_1d.mainPlayer;
 
 //->AddAmmoMain.Game
@@ -34,7 +37,8 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
     // 逻辑参数声明
     private Actions playerActions, enemyActions, enemy2Actions, enemy3Actions;
-    private Players player, enemy, enemy2, enemy3;
+    private Players player;
+    private Enemy enemy, enemy2, enemy3;
     private PlayerStats playerStats, enemyStats, enemy2Stats, enemy3Stats;
     private int bonusDamage;
 
@@ -83,55 +87,47 @@ public class Game extends JPanel implements FrameSize, ActionListener {
     }
 
     // 游戏过程中的胜负逻辑判断
-    public void initGame() {
-
-        player.getPlayerStats().resetDmgDefThief();
-        player.getPlayerStats().resetAllSettlements();
-        enemy.getPlayerStats().resetDmgDefThief();
-        enemy.getPlayerStats().resetAllSettlements();
+    private void initGame() {
 
         bonusDamage = 0;
         isGameOver = false;
         round = 1;
     }
 
-    public void resetStats() {
+    private void resetStats() {
         initGame();// 只是复用方法，不代表包含关系
     }
 
     // 初始化玩家属性
-    public void initPlayer(int totalPlayer) throws Exception {
+    private void initPlayer(int totalPlayer) throws Exception {
 
         if (MAX_HP == 0)
             MAX_HP = 3;
         if (DEFAULT_AMMO == 0)
             DEFAULT_AMMO = 1;
 
-        playerStats = new PlayerStats();
-        player = new Player(MAX_HP, DEFAULT_AMMO,
-                playerStats,
+        //playerStats = new PlayerStats();
+        player = new Player(MAX_HP,
+                DEFAULT_AMMO,
                 playerActions,
                 "player");
 
         switch (totalPlayer) {
             case 4:
-                enemy3Stats = new PlayerStats();
-                enemy3 = new Enemy(MAX_HP, DEFAULT_AMMO,
-                        enemy3Stats,
+                enemy3 = new Enemy(MAX_HP, 
+                        DEFAULT_AMMO,
                         enemy3Actions,
                         "enemy3");
 
             case 3:
-                enemy2Stats = new PlayerStats();
-                enemy2 = new Enemy(MAX_HP, DEFAULT_AMMO,
-                        enemy2Stats,
+                enemy2 = new Enemy(MAX_HP, 
+                        DEFAULT_AMMO,
                         enemy2Actions,
                         "enemy2");
                 throw new Exception("unsupported player numbers, only \"2\" is ok...");
             case 2:
-                enemyStats = new PlayerStats();
-                enemy = new Enemy(MAX_HP, DEFAULT_AMMO,
-                        enemyStats,
+                enemy = new Enemy(MAX_HP, 
+                        DEFAULT_AMMO,
                         enemyActions,
                         "enemy");
                 break;
@@ -142,7 +138,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
     }
 
     // 初始化UI界面
-    public void initUI() {
+    private void initUI() {
         logPanel = new LogPanel();
         playerStatsPanel = new PlayerStatsPanel();
         selectTablePanel = new SelectTablePanel();
@@ -192,7 +188,12 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
     // above are UI-related initualizations
 
-    public void duoPlayerRound(int playerSelectedActionID) {
+    /**
+     * the CORE method of this game, which only run in a 1v1 dual
+     * 
+     * @param playerSelectedActionID accept player input action ID
+     */
+    private void duoPlayerRound(int playerSelectedActionID) {
         {
             player.getPlayerStats().resetDmgDefThief();
             enemy.getPlayerStats().resetDmgDefThief();
@@ -220,8 +221,6 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                 enemy.getPlayerActions().getAmmoCost() + " ammo");
         System.out.println("You've selected: " + player.getPlayerActions().getActionNameString() + ", cost " +
                 player.getPlayerActions().getAmmoCost() + " ammo");
-        // playerAmmoleftLabel.setText(""+player.getAmmoLeft());
-        // playerHP_Label.setText(""+player.getHP());
 
         // actions属性转移。
         player.generalActivating();
@@ -238,8 +237,23 @@ public class Game extends JPanel implements FrameSize, ActionListener {
             player.checkHealing(0);
             enemy.checkHealing(0);
 
+            enemy.grasping(new GraspRequest() {
+                @Override
+                public void graspTo(AM_Recorder recorder){
+                    recorder.add(recorder.newRecord(
+                        player.getPlayerActions(),
+                        enemy.getPlayerActions(),
+                        resultResolve()
+                    ));
+
+                };
+                @Override
+                public int resultResolve(){
+                    return 0;
+                }
+            });
+
         } else {
-            //System.out.println("开始判断危险人物");
             roundLoser = roundWinner == player ? enemy : player;
             roundWinner.winActivating();
 
@@ -359,7 +373,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
             roundLoser.setHP(roundLoser.getHP() - damageDealt);// 败者食尘 xD
 
-            if (RNGenerator.isActivated) {
+            if (AM_RNGenerator.isActivated) {
                 if (roundWinner == player) {
                     logPanel.updateLog(
                             LogPanel.AT_THIRD,
@@ -371,8 +385,27 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                             "The dice of fate just rolled and you lost this round",
                             LogPanel.NOTIFY_MSG);
                 }
-                RNGenerator.isActivated = false;
+                AM_RNGenerator.isActivated = false;
             }
+
+            specificProcess(roundWinner.getPlayerActions().getSpecificSign());
+            enemy.grasping(new GraspRequest() {
+
+                @Override
+                public void graspTo(AM_Recorder recorder) {
+                    recorder.add(recorder.newRecord(
+                        player.getPlayerActions(), 
+                        enemy.getPlayerActions(), 
+                        resultResolve()
+                    ));
+                }
+                @Override
+                public int resultResolve(){
+                    if(roundWinner == enemy) return 1;
+                    else if(roundWinner == null) return 0;
+                    else return -1;
+                }
+            });
 
         }
 
@@ -449,7 +482,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                 System.out.println("The action is NOT exist yet, try another one");
                 logPanel.updateLog(LogPanel.AT_FOURTH, "/!\\ The action is NOT exist yet, try another one",
                         LogPanel.ERROR_MSG);
-                // ex.printStackTrace();
+                //ex.printStackTrace();
                 break;
             } catch (Exception ex) {
                 System.out.println("Nice job! How'd f you find such the input-related bug? Report it to me asap!!!");
@@ -544,6 +577,24 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
         setLayout(new FlowLayout());
         //add(configPanel);
+    }
+
+    private void specificProcess(int specificSign){
+        switch(specificSign){
+            case(-1):{
+                break;
+            }
+            case(0):{
+                break;
+            }
+            case(1):{
+                break;
+            }
+            default:{
+                break;
+            }
+        }
+
     }
 }
 
@@ -652,5 +703,6 @@ final class DialogPanel extends JPanel {
     public void addButtonSelectingListener(ButtonSelectingListener listener) {
         this.buttonSelectingListener = listener;
     }
+
 
 }

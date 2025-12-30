@@ -10,6 +10,7 @@ public final class Actions {
     private int specificSign;
     
     
+
     public Actions(){
 
     }
@@ -90,6 +91,14 @@ public final class Actions {
     public void setActionNameString(String actionNameString) {
         this.actionNameString = actionNameString;
     }
+    
+    public int getSpecificSign() {
+        return specificSign;
+    }
+
+    public void setSpecificSign(int specificSign) {
+        this.specificSign = specificSign;
+    }
 
     public void setActionStateDefault(){
         this.setActionNameString(null);
@@ -103,4 +112,8 @@ public final class Actions {
 
     }
 
+    @Override
+    public String toString(){
+        return getActionNameString()==null?"null":getActionNameString();
+    }
 }

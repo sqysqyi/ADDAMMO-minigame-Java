@@ -8,10 +8,9 @@ public class Player extends Players {
         super();
         //playerActions = new actions();
     }//空参构造
-    public Player(int HP, int ammoLeft, PlayerStats playerStats, 
-                     Actions playerActions, String playerNameString) {
+    public Player(int HP, int ammoLeft, Actions playerActions, String playerNameString) {
         //playerActions = new actions();
-        super(HP, ammoLeft, playerStats, playerActions, playerNameString);
+        super(HP, ammoLeft, playerActions, playerNameString);
         
     }
 
