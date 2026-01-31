@@ -4,12 +4,13 @@ import java.util.HashMap;
 import java.util.Random;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Actions;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionsLib;
+import ADDAMMOLOL_0_1_x.AddAmmoUtil.AM_Decision;
 import ADDAMMOLOL_0_1_x.AddAmmoUtil.AM_Recorder;
 
 public class Enemy extends Players {
     private int selectedActionID, ambitiousActionID;
     private AM_Recorder recorder;
-    // private ArrayList<Integer> actionSelectPool;
+    private AM_Decision decision;
     private HashMap<Actions, Integer> weightMap;
 
     public Enemy() {
@@ -25,23 +26,12 @@ public class Enemy extends Players {
     }
 
     // actionsSelecting() start below
+    /**
+     * @param  num is meaningless just ignore it;
+     */
     @Override
-    public int actionsSelecting(int opponentHP_left, int opponentAmmoLeft, PlayerStats opponentPlayerStats) {
-
-        if (ambitiousActionID == 0) {
-            createAmbitious();
-        }
-
-        guessing();
-        // then
-        /*
-         * 电脑AI设计
-         * 
-         */
-
-        if (selectedActionID == ambitiousActionID)
-            ambitiousActionID = 0;// 若已选择的action和长期期望的一致，则可以将期望action重置
-        return selectedActionID;
+    public int actionsSelecting(int num, Players opponent , PlayerStats opponentPlayerStats) {
+        return 0;
     }
 
     /**
@@ -52,7 +42,7 @@ public class Enemy extends Players {
      * At present, the way "guessing" the ambitious action is EXTREMELY low
      * efficency, may improve days after?
      */
-    private void createAmbitious() {
+    public static int createAmbitious() {
         Random rand = new Random();
         int preSelectActionID;
         while (true) {
@@ -68,8 +58,14 @@ public class Enemy extends Players {
 
             break;
         }
-        ambitiousActionID = preSelectActionID;
+        return preSelectActionID;
 
+    }
+    public int getAmbitious(){
+        return ambitiousActionID;
+    }
+    public void setAmbitious(int ID){
+        this.ambitiousActionID = ID;
     }
 
     /******************************************************************************************************* */
@@ -82,10 +78,7 @@ public class Enemy extends Players {
      * 
      * 
      */
-    private void guessing() {
-        int[] reports = recorder.formReports();// [0]:tension;[1]:instability
-
-    }
+   
     /********************************************************************************************************* */
 // actionsSelecting() end here
     private static final int DEFAULT_WEIGHT = 1;

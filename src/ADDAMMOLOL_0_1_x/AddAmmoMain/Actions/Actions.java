@@ -116,4 +116,9 @@ public final class Actions {
     public String toString(){
         return getActionNameString()==null?"null":getActionNameString();
     }
+
+    public interface ActionRules {
+        void follows();
+        
+    }
 }

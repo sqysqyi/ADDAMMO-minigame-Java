@@ -138,7 +138,7 @@ public abstract class Players {
      * @param playerStats Player stats
      * @return the final action ID
      */
-    public abstract int actionsSelecting(int optional_Index, int AmmoLeft, PlayerStats playerStats);
+    public abstract int actionsSelecting(int input, Players player, PlayerStats playerStats);
 
     /**
      * Comparing players' actions and give out whoever win this round

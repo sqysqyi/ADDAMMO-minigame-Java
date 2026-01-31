@@ -26,8 +26,8 @@ public class Player extends Players {
     }//never used seems :D
 
     @Override
-    public int actionsSelecting(int playerInput,int playerAmmoLeft,PlayerStats playerStats){
-        if(playerAmmoLeft < this.selectActions(playerInput).getAmmoCost()){
+    public int actionsSelecting(int playerInput, Players player,PlayerStats playerStats){
+        if(player.getAmmoLeft() < this.selectActions(playerInput).getAmmoCost()){
             return -1;
         }else if(playerInput == 602 && !playerStats.isMissileSettled()){//failing launch missile with no launcher settled
             return -2;

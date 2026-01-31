@@ -213,7 +213,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
         playerActions = player.selectActions(playerSelectedActionID);
         player.setPlayerActions(playerActions);// 玩家选择的action
 
-        int enemySelectedActionID = enemy.actionsSelecting(player.getHP(), player.getAmmoLeft(), playerStats);
+        int enemySelectedActionID = enemy.actionsSelecting(0 /*always 0 here */, player, playerStats);
         enemyActions = enemy.selectActions(enemySelectedActionID);
         enemy.setPlayerActions(enemyActions);// enemy电脑自动选择action
 
@@ -402,7 +402,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                 @Override
                 public int resultResolve(){
                     if(roundWinner == enemy) return 1;
-                    else if(roundWinner == null) return 0;
+                    //else if(roundWinner == null) return 0;
                     else return -1;
                 }
             });
@@ -450,7 +450,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                 }
 
                 int actionID = Integer.parseInt(input);
-                int preSelections = player.actionsSelecting(actionID, player.getAmmoLeft(), player.getPlayerStats());
+                int preSelections = player.actionsSelecting(actionID ,player, player.getPlayerStats());
                 if (preSelections == -1) {//返回-1代表子弹不足
                     String msg = "Failed to active the selected action: "
                             + ActionsLib.searchActions(actionID).getActionNameString() + " ,Because you have "
