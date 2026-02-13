@@ -15,7 +15,7 @@ import ADDAMMOLOL_0_1_x.AddAmmoUI.GameUI_Set.StartingMenuPanel.StartingButtonsLi
 public class Start {
     public static int FRAME_HEIGHT = 600;
     public static int FRAME_WIDTH = 800;
-    public static final String version = "0.1.1";
+    public static final String version = "0.1.2";
 
     public Game game;
     private StartingMenuPanel startingMenuPanel;

@@ -7,7 +7,7 @@ import ADDAMMOLOL_0_1_x.AddAmmoMain.Start;
 public class Main {
     
     public static void main(String[] args) {
-        System.out.println("AddAmmo " + Start.version + ", gui snapshot ");
+        System.out.println("AddAmmo " + Start.version + ", new AI lots bugs :( ");
 
         SwingUtilities.invokeLater(() -> {
             try {
