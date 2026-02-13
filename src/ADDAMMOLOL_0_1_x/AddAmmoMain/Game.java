@@ -37,7 +37,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
     // 逻辑参数声明
     private Actions playerActions, enemyActions, enemy2Actions, enemy3Actions;
-    private Players player;
+    private Player player;
     private Enemy enemy, enemy2, enemy3;
     private PlayerStats playerStats, enemyStats, enemy2Stats, enemy3Stats;
     private int bonusDamage;
@@ -49,6 +49,10 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
     public static int round = 1;
     public static boolean isGameOver = false;
+
+    public static int global_dangerous = 0;
+    public static int global_legit = 0;
+    public static int global_peace = 0;
 
     public Game() throws Exception {
 
@@ -209,7 +213,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                 "",
                 LogPanel.INFO_MSG);
         // playerSelectedActionID = 101 ;//
-        // player.actionsSelecting(player.getHP(),player.getAmmoLeft(),playerGameStats);
+        player.actionsSelecting(playerSelectedActionID,null,playerStats);
         playerActions = player.selectActions(playerSelectedActionID);
         player.setPlayerActions(playerActions);// 玩家选择的action
 
@@ -482,7 +486,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                 System.out.println("The action is NOT exist yet, try another one");
                 logPanel.updateLog(LogPanel.AT_FOURTH, "/!\\ The action is NOT exist yet, try another one",
                         LogPanel.ERROR_MSG);
-                //ex.printStackTrace();
+                ex.printStackTrace();
                 break;
             } catch (Exception ex) {
                 System.out.println("Nice job! How'd f you find such the input-related bug? Report it to me asap!!!");

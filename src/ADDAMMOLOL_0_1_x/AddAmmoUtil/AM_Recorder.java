@@ -1,18 +1,15 @@
 package ADDAMMOLOL_0_1_x.AddAmmoUtil;
 
-import java.util.function.Predicate;
-
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Game;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Actions;
-import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionsLib;
-import ADDAMMOLOL_0_1_x.AddAmmoUtil.DebugTool.Debug;
 /**
  * A recorder based on an eight-length array
  * 
  */
-public final class AM_Recorder{
+public final class AM_Recorder {
 
     private SubRecord[] records ;
-    private int maxSize = 4; 
+    private int maxSize = 8; 
     
     public AM_Recorder (){
         init();
@@ -45,6 +42,11 @@ public final class AM_Recorder{
         }
         return counter;
     }
+
+    public boolean isEmpty(){
+        if(records[0].getSerial() == -1) return true;
+        else return false;
+    }
     //向记录器中添加记录
     //********************* begin of add()
     public void add(SubRecord inputRecord){
@@ -59,7 +61,7 @@ public final class AM_Recorder{
                     
                     continue;
                 }
-                if(records[i].getSerial() >= 7){
+                if(records[i].getSerial() >= maxSize - 1){
                     //then add both actions into the recorder
                     //inputRecord.setSerial(i);
                     overwriteRecord(inputRecord,i);
@@ -74,6 +76,7 @@ public final class AM_Recorder{
     public SubRecord newRecord(Actions enemyActions, Actions thisActions, int result){
         return new SubRecord(0,enemyActions, thisActions, result);
     }
+
     private void writeRecord(SubRecord input, int at){   
         records[at] = input;
     }
@@ -85,102 +88,90 @@ public final class AM_Recorder{
     final int this_win = 1;
     final int this_lost = -1;
     //final int tied = 0;
-    public Actions[][] rcmdActions(){
-        Actions[][] result = new Actions[3][];
-        //如果当前record有效大小小于3，则因历史记录不足而无法生成结果，具体结果将在enemy中处理
-        if (currentSize() < 3) return null;
-        
-        int counter = 3;
-        int i = 0;
-        boolean collecting = false;
-        while(i < currentSize()){
-            SubRecord r = records[i];
-            if(r.getSerial() == currentSize()){ 
-               collecting = true;
-               break;
-            }
-            i++;
-        }
-        if (collecting) {
-            while (counter > 0) {
-                SubRecord r = records[i];
-                result[3 - counter] = sift(r);
-                counter--;
-                i++;
-                if (i >= currentSize()) i = 0;
-                
-            }
-        }else{
-            throw new IllegalArgumentException();
-        }
-        
 
-        return result;
+    public void simpleSummary(){
         
-    }
-    /*public int[] formReports(){
-        int tension = 0;//局势的紧张度————下一回合玩家出现伤害性动作的度量
-        int instability=0;//电脑认为的“玩家”下回合出现“非法”(legit < 0)的动作的度量
-        //
-        //以下暂行
-        for(SubRecord record : records){//headache wtf it is ??????
-            if (record == null) break;
+        for(SubRecord r : records){ 
+            if(r.getThisActions() == null) break;
 
-        
+            int d = r.getThisActions().getDangerous(),od = r.getOppActions().getDangerous();
+            int l = r.getThisActions().getLegit(), ol = r.getThisActions().getLegit();
+            int a = r.getThisActions().getAmmoCost(), oa = r.getOppActions().getAmmoCost();
             
-            if(record.getResult() == this_win){
-                tension += (record.getThisActions().getDangerous() - record.getOppActions().getDangerous());
-                //紧张度增加为胜者与负者的dangerous差值
-                instability += (record.getOppActions().getLegit() - record.getThisActions().getLegit());
-                //玩家不稳定度负值为更易出小偷/正值更易出警察
-            }else if(record.getResult() == win_win){
-                tension -= Math.min(record.getThisActions().getDangerous(),record.getOppActions().getDangerous());
-                //局势稍缓和
-                instability += Math.min(record.getOppActions().getLegit(), record.getThisActions().getLegit());
-                //玩家更有可能再来
-            }else if(record.getResult() == this_lost){
-                tension -= (record.getThisActions().getDangerous() - record.getOppActions().getDangerous());
-                //刚得逞，不会有资源发动行动
-                instability -= (record.getOppActions().getLegit() - record.getThisActions().getLegit());
-                //玩家得逞，有可能放松警惕
+            if(r.getResult() == 1){
+                Game.global_dangerous -= d - od;
+                Game.global_legit -= l - ol;
+                Game.global_peace -= a - oa;
+            }else if(r.getResult() == -1 ){
+                Game.global_dangerous += d - od;
+                Game.global_legit += l - ol;
+                Game.global_peace += a - oa;
+            }else if(r.getResult() == 0){
+                Game.global_dangerous -= Math.max(d, od);
+                Game.global_legit -= Math.max(l, ol);
+                Game.global_peace -= Math.min(a, oa);
             }else{
-                throw new IllegalArgumentException("The record.getResult(),int should only be -1, 0 or 1");
-                //game would crash this way
+                throw new IllegalArgumentException();
+            }
+        }   
+    }
+
+    public int genConfidence(){
+        int confidence_cache = 500;
+        int internal_counter = 1;
+        int last_result = -2;//as the default result index means: No last result record
+        for(SubRecord r: records){
+            internal_counter = r.getResult() == last_result? internal_counter++:1;
+            confidence_cache = r.getResult() <= 0 ? confidence_cache - 4*internal_counter:confidence_cache + 6*internal_counter;
+            last_result = r.getResult();
+        }
+        return confidence_cache;
+    }
+
+    public SubRecord searchBySerial(int serial){
+        for(SubRecord r: records){
+            if(r.getSerial() == serial) return r;
+        }
+        return null;
+    }
+
+    /**
+     * Specifically used during making decision
+     * @param start the start serial wthin the Recorder
+     * @param end the end serial within the Recorder
+     * @param rule the method how you wanto filter the target records
+     * @return if exist the record match the rules given
+     * @see AM_Decision
+     */
+    public boolean ifExistBetween(int start, int end, AM_Carrier<Actions> rule){
+        
+        for(SubRecord r: records){
+            if(r.getSerial()< start || r.getSerial() > end) continue;
+            if((rule.matchWith(r.getThisActions()) && r.getResult() == this_lost) 
+                || (rule.matchWith(r.getOppActions()) && r.getResult() == this_win)){
+                return true;
             }
         }
-
-        int[] reports = {tension, instability};
-        Debug.print("tension: "+tension+", instability: "+instability);
-        return reports;
-    }*/
-    private Actions[] sift(SubRecord r) {
-        if(r.getResult() == this_win){
-            //在这一回合，this指电脑获胜，所以需要提防玩家重新尝试该actions
-            return 
-            (Actions[])ActionsLib.searchWtihCondition( t ->{
-                //返回满足筛选条件的结果：
-                //遵循能强则强的原则
-                /*condition #1  */
-                boolean c1 = t.getDangerous() >= r.getThisActions().getDangerous();
-
-                /*condition #2  */
-                boolean c2 = t.getLegit() * r.getOppActions().getLegit() > 0;
-
-                /*condition #3  */
-                boolean c3 = t.getID() == r.getOppActions().getID();
-
-                /*condition #4  */
-                boolean c4 = t.getID() == r.getThisActions().getID();
-
-                return c1 || c2 || c3 || c4;
-            })
-            .toArray();
-        }else if(r.getResult() == this_lost){
-            return null;
-
-        }else{
-            return null;
-        }
+        return false;
+    }
+    /**
+     * From start serial to the very end of the recorder
+     * @param start
+     * @param rule
+     * @return
+     */
+    public boolean ifExistBetween(int start, AM_Carrier<Actions> rule){
+        return ifExistBetween(start<currentSize()-1?start:currentSize()-1 , currentSize() - 1, rule);
+    }
+    /**
+     * Get from end
+     * @param target 
+     * @param lengthTillEnd like recorder [1,2,3,4,5,6,7,8], with parameters (rule,lengthTillEnd),would get the result as:(rule, 3)->> [6,7,8] 
+     * @return
+     */
+    public boolean ifExistBetween(AM_Carrier<Actions> rule, int lengthTillEnd){
+        if(currentSize() -1-lengthTillEnd < 0) return ifExistBetween(0, rule);
+        else return ifExistBetween(currentSize()-1-lengthTillEnd, currentSize()-1, rule);
     }
 
     @Override
@@ -191,7 +182,7 @@ public final class AM_Recorder{
             out.append("\n\r");
         }
         return out.toString();
-    }
+    }//for debug ueage 
     
     private class SubRecord {
         private Actions opponentHistory,thisHistory;
@@ -245,6 +236,10 @@ public final class AM_Recorder{
 
     }
 
+    public interface AM_Carrier<M> {
+        boolean matchWith(M m);
+        
+    }
 }
 
 

@@ -1,5 +1,8 @@
 package ADDAMMOLOL_0_1_x.AddAmmoMain.Players;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Random;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Actions;
@@ -10,11 +13,14 @@ import ADDAMMOLOL_0_1_x.AddAmmoUtil.AM_Recorder;
 public class Enemy extends Players {
     private int selectedActionID, ambitiousActionID;
     private AM_Recorder recorder;
-    private AM_Decision decision;
-    private HashMap<Actions, Integer> weightMap;
+    private HashMap<Actions, Integer> weightSelectingPool;
+    private ArrayList<Actions> selectingPool;
+    private int confidence;
+    
 
     public Enemy() {
         super();
+        init();
         // super(HP, ammoLeft, dangerous, legit, isSteal, isMissileSettled,
         // playerNameString);
     }
@@ -30,8 +36,39 @@ public class Enemy extends Players {
      * @param  num is meaningless just ignore it;
      */
     @Override
-    public int actionsSelecting(int num, Players opponent , PlayerStats opponentPlayerStats) {
-        return 0;
+    public int actionsSelecting(int num, Player opponent , PlayerStats opponentPlayerStats) {
+        
+        AM_Decision.start(ambitiousActionID, this, opponent);
+        try{
+            selectingPool = new ArrayList<>(Arrays.asList(AM_Decision.readResults()));
+            
+        }
+        catch(IllegalStateException ise){
+            ise.printStackTrace();
+            System.out.println("Check the state of AM_Decision! ");
+            selectingPool = new ArrayList<>(Arrays.asList(new Actions[]{
+                ActionsLib.ADD_AMMO.toAction()
+            }));
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+        for( Actions a : selectingPool){
+            if(a.getID() == ambitiousActionID && a.getAmmoCost() <= this.getAmmoLeft()) return ambitiousActionID; 
+        }
+        Collections.shuffle(selectingPool);
+        for(Actions a : selectingPool){
+            if(a.getAmmoCost() <= this.getAmmoLeft()) {
+                if(a.getAmmoCost() <= this.getAmmoLeft() && a.getID() != ActionsLib.MISSILE.toAction().getID()) 
+                    return a.getID();
+                if(a.getID() == ActionsLib.MISSILE.toAction().getID() && this.getPlayerStats().isMissileSettled())
+                    return a.getID();
+                
+            }
+        }
+
+        return ActionsLib.ADD_AMMO.toAction().getID();
     }
 
     /**
@@ -84,12 +121,17 @@ public class Enemy extends Players {
     private static final int DEFAULT_WEIGHT = 1;
 
     private void init() {
-        weightMap = new HashMap<>();
-        for (Actions action : ActionsLib.getAll()) {
-            weightMap.put(action, DEFAULT_WEIGHT);
-        }
+        //weightMap = new HashMap<>();
+        //for (Actions action : ActionsLib.getAll()) {
+        //    weightMap.put(action, DEFAULT_WEIGHT);
+        //}
         recorder = new AM_Recorder();
         // actionSelectPool = new ArrayList<>();
+    }
+
+    public int confidence(){
+        
+        return recorder.genConfidence();
     }
 
     public AM_Recorder getRecorder(){
@@ -99,6 +141,7 @@ public class Enemy extends Players {
 
     public void grasping(GraspRequest graspRequest) {
         graspRequest.graspTo(recorder);
+        this.recorder.simpleSummary();
     }
 
     public interface GraspRequest {

@@ -12,7 +12,9 @@ public abstract class Players {
     private String playerNameString;
     private Actions playerActions;
 
-    public Players() {}
+    public Players() {
+        this.playerStats =  new PlayerStats();
+    }
 
     public Players(int HP, int ammoLeft,
             Actions playerActions, String playerNameString) {
@@ -138,7 +140,7 @@ public abstract class Players {
      * @param playerStats Player stats
      * @return the final action ID
      */
-    public abstract int actionsSelecting(int input, Players player, PlayerStats playerStats);
+    public abstract int actionsSelecting(int input, Player player, PlayerStats playerStats);
 
     /**
      * Comparing players' actions and give out whoever win this round

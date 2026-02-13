@@ -1,7 +1,9 @@
 package ADDAMMOLOL_0_1_x.AddAmmoMain.Actions;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 //所有可能会对对手造成伤害的actions的dangerous属性必须为正值；
 //所有绝对不可能使players成为 more dangerous player的actions应该为dangerous 为-1；
@@ -187,11 +189,12 @@ public enum ActionsLib{
 
     public static ArrayList<Actions> searchWtihCondition(Predicate<Actions> conditon){
         return 
-        (ArrayList<Actions>)getAll()
-                            .stream()
-                            .filter(conditon)
-                            .toList();
+        getAll()
+        .stream()
+        .filter(conditon)
+        .collect(Collectors.toCollection(ArrayList::new));
     }
+    
     public static boolean canAfford(int ID, int ammoLeft){
         try{
             return searchActions(ID).getAmmoCost() <= ammoLeft;
