@@ -9,12 +9,16 @@ import ADDAMMOLOL_0_1_x.AddAmmoUI.Updatable;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.initUI;
 
 import java.awt.Color;
+import java.awt.GridLayout;
 
 public final class PlayerStatsPanel extends JPanel implements initUI,Updatable{
+    JPanel playerLauncherAndMine, enemyLauncherAndMine;
     JLabel playerStatsTitleLabel,enemyStatsTitleLabel;
     JLabel playerHP_Label,enemyHP_Label;
     JLabel playerAmmoleftLabel,enemyAmmoLeftLabel ;
     JLabel playerSelectedActionLabel,enemySelectedActionLabel;
+    JLabel p_launcherSignal,e_launcherSignal;
+    JLabel p_mineSignal,e_mineSignal;
 
     public PlayerStatsPanel(){
         initualizeUI();
@@ -54,11 +58,42 @@ public final class PlayerStatsPanel extends JPanel implements initUI,Updatable{
 
         enemySelectedActionLabel = new JLabel("Action: Unknown yet");
             enemySelectedActionLabel.setForeground(Color.WHITE);
+
+        playerLauncherAndMine = new JPanel();
+            playerLauncherAndMine.setBackground(Color.BLACK);
+            playerLauncherAndMine.setLayout(new GridLayout(1, 2));
+            p_launcherSignal = new JLabel("<L>");
+            p_mineSignal = new JLabel("<M>");
+
+            p_launcherSignal.setForeground(Color.DARK_GRAY);
+            p_mineSignal.setForeground(Color.DARK_GRAY);
+
+            p_launcherSignal.setBackground(Color.BLACK);
+            p_mineSignal.setBackground(Color.BLACK);
+
+            playerLauncherAndMine.add(p_launcherSignal);
+            playerLauncherAndMine.add(p_mineSignal);
+
+        enemyLauncherAndMine = new JPanel();
+            enemyLauncherAndMine.setBackground(Color.BLACK);
+            enemyLauncherAndMine.setLayout(new GridLayout(1, 2));
+        
+            e_launcherSignal = new JLabel("<L>");
+            e_mineSignal = new JLabel("<M>");
+
+            e_launcherSignal.setForeground(Color.DARK_GRAY);
+            e_mineSignal.setForeground(Color.DARK_GRAY);
+
+            e_launcherSignal.setBackground(Color.BLACK);
+            e_mineSignal.setBackground(Color.BLACK);
+
+            enemyLauncherAndMine.add(e_launcherSignal);
+            enemyLauncherAndMine.add(e_mineSignal);
         
         add(playerStatsTitleLabel);
-        add(new JLabel());
+        add(playerLauncherAndMine);
         add(enemyStatsTitleLabel);
-        add(new JLabel());
+        add(enemyLauncherAndMine);
         
         add(playerHP_Label);
         add(new JLabel());
@@ -96,5 +131,27 @@ public final class PlayerStatsPanel extends JPanel implements initUI,Updatable{
 
         playerSelectedActionLabel.setText("Action: " + player.getPlayerActions().getActionNameString());
         enemySelectedActionLabel.setText("Action: " + enemy.getPlayerActions().getActionNameString());
+
+        if(player.getPlayerStats().isMineReady()){
+            p_mineSignal.setForeground(Color.RED);
+        }else{
+            p_mineSignal.setForeground(Color.DARK_GRAY);
+        }
+        if(enemy.getPlayerStats().isMineReady()){
+            e_mineSignal.setForeground(Color.RED);
+        }else{
+            e_mineSignal.setForeground(Color.DARK_GRAY);
+        }
+
+        if(player.getPlayerStats().isMissileSettled()){
+            p_launcherSignal.setForeground(Color.GREEN);
+        }else{
+            p_launcherSignal.setForeground(Color.DARK_GRAY);
+        }
+        if(enemy.getPlayerStats().isMissileSettled()){
+            e_launcherSignal.setForeground(Color.GREEN);
+        }else{
+            e_launcherSignal.setForeground(Color.DARK_GRAY);
+        }
     }
 }

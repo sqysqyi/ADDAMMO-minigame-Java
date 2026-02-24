@@ -5,16 +5,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Random;
-import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Actions;
-import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionsLib;
+
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Action;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionX;
 import ADDAMMOLOL_0_1_x.AddAmmoUtil.AM_Decision;
 import ADDAMMOLOL_0_1_x.AddAmmoUtil.AM_Recorder;
 
 public class Enemy extends Players {
     private int selectedActionID, ambitiousActionID;
     private AM_Recorder recorder;
-    private HashMap<Actions, Integer> weightSelectingPool;
-    private ArrayList<Actions> selectingPool;
+    private HashMap<Action, Integer> weightSelectingPool;
+    private ArrayList<Action> selectingPool;
     private int confidence;
     
 
@@ -25,7 +26,7 @@ public class Enemy extends Players {
         // playerNameString);
     }
 
-    public Enemy(int HP, int ammoLeft, Actions enemyActions, String playerNameString) {
+    public Enemy(int HP, int ammoLeft, Action enemyActions, String playerNameString) {
         super(HP, ammoLeft,  enemyActions, playerNameString);
         init();
 
@@ -46,29 +47,29 @@ public class Enemy extends Players {
         catch(IllegalStateException ise){
             ise.printStackTrace();
             System.out.println("Check the state of AM_Decision! ");
-            selectingPool = new ArrayList<>(Arrays.asList(new Actions[]{
-                ActionsLib.ADD_AMMO.toAction()
+            selectingPool = new ArrayList<>(Arrays.asList(new Action[]{
+                ActionX.ADD_AMMO.toAction()
             }));
         }
         catch(Exception e){
             e.printStackTrace();
         }
 
-        for( Actions a : selectingPool){
+        for( Action a : selectingPool){
             if(a.getID() == ambitiousActionID && a.getAmmoCost() <= this.getAmmoLeft()) return ambitiousActionID; 
         }
         Collections.shuffle(selectingPool);
-        for(Actions a : selectingPool){
+        for(Action a : selectingPool){
             if(a.getAmmoCost() <= this.getAmmoLeft()) {
-                if(a.getAmmoCost() <= this.getAmmoLeft() && a.getID() != ActionsLib.MISSILE.toAction().getID()) 
+                if(a.getAmmoCost() <= this.getAmmoLeft() && a.getID() != ActionX.MISSILE.toAction().getID()) 
                     return a.getID();
-                if(a.getID() == ActionsLib.MISSILE.toAction().getID() && this.getPlayerStats().isMissileSettled())
+                if(a.getID() == ActionX.MISSILE.toAction().getID() && this.getPlayerStats().isMissileSettled())
                     return a.getID();
                 
             }
         }
 
-        return ActionsLib.ADD_AMMO.toAction().getID();
+        return ActionX.ADD_AMMO.toAction().getID();
     }
 
     /**
@@ -88,9 +89,9 @@ public class Enemy extends Players {
 
             preSelectActionID = (groupIndex + 1) * 100 + itemIndex + 1;
             // 排除条件如下：
-            if (ActionsLib.searchActions(preSelectActionID) == null)
+            if (ActionX.searchActions(preSelectActionID) == null)
                 continue;// 不存在的action舍弃
-            if (ActionsLib.getActionAmmoCost(preSelectActionID) < 2)
+            if (ActionX.getActionAmmoCost(preSelectActionID) < 2)
                 continue;// 子弹数小于2 的,拜托，有点追求好吧
 
             break;

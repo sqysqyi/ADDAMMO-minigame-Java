@@ -13,7 +13,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
-import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.*;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Action;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionX;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.*;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.*;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.Enemy.GraspRequest;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.Players.PlayerStats;
@@ -36,7 +38,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
     //DialogPanel restartNew;
 
     // 逻辑参数声明
-    private Actions playerActions, enemyActions, enemy2Actions, enemy3Actions;
+    private Action playerActions, enemyActions, enemy2Actions, enemy3Actions;
     private Player player;
     private Enemy enemy, enemy2, enemy3;
     private PlayerStats playerStats, enemyStats, enemy2Stats, enemy3Stats;
@@ -197,6 +199,119 @@ public class Game extends JPanel implements FrameSize, ActionListener {
      * 
      * @param playerSelectedActionID accept player input action ID
      */
+    private void mainRound(int playerSelectedActionID){
+        player.getPlayerStats().resetDmgDefThief();
+        enemy.getPlayerStats().resetDmgDefThief();
+        bonusDamage = 0;
+
+        player.actionsSelecting(playerSelectedActionID,null,playerStats);
+        playerActions = player.selectActions(playerSelectedActionID);
+        player.setPlayerActions(playerActions);// 玩家选择的action
+
+        int enemySelectedActionID = enemy.actionsSelecting(0 /*always 0 here */, player, playerStats);
+        enemyActions = enemy.selectActions(enemySelectedActionID);
+        enemy.setPlayerActions(enemyActions);// enemy电脑自动选择action
+
+        int current_state = ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionEvent.round_before;
+        player.getPlayerActions().getEvent().doWhen(
+            current_state, 
+            player);
+
+        enemy.getPlayerActions().getEvent().doWhen(
+            current_state, 
+            enemy);
+
+        Players roundWinner = Players.Comparing(player, enemy);
+        Players roundLoser;// 参比对象主要还是以player而不是enemy类
+
+        if (roundWinner == null) {// 平局检查
+            roundLoser = null;
+            player.getPlayerActions().getEvent().doWhen(
+                ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionEvent.round_tied, 
+                player, 
+                new Players[]{enemy}
+            );
+            enemy.getPlayerActions().getEvent().doWhen(
+                ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionEvent.round_tied, 
+                enemy,
+                new Players[]{player} 
+            );
+
+            enemy.grasping(new GraspRequest() {
+                @Override
+                public void graspTo(AM_Recorder recorder){
+                    recorder.add(recorder.newRecord(
+                        player.getPlayerActions(),
+                        enemy.getPlayerActions(),
+                        resultResolve()
+                    ));
+
+                };
+                @Override
+                public int resultResolve(){
+                    return 0;
+                }
+            });
+        }
+        else{
+            roundLoser = roundWinner == player ? enemy : player;
+
+            if(roundLoser.getPlayerStats().HealingFlag()){
+                roundWinner.getPlayerStats().setRawDmg( 
+                    roundWinner.getPlayerActions().getRawDmg() * 2
+                );
+                roundLoser.getPlayerStats().setHealingFlag(false);
+            }
+
+            roundWinner.getPlayerActions().getEvent().doWhen(
+                ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionEvent.round_win, 
+                roundWinner, 
+                new Players[]{roundLoser}
+            );
+            roundLoser.getPlayerActions().getEvent().doWhen(
+                ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionEvent.round_lost, 
+                roundLoser, 
+                new Players[]{roundWinner}
+            );
+
+            enemy.grasping(new GraspRequest() {
+                @Override
+                public void graspTo(AM_Recorder recorder) {
+                    recorder.add(recorder.newRecord(
+                        player.getPlayerActions(), 
+                        enemy.getPlayerActions(), 
+                        resultResolve()
+                    ));
+                }
+                @Override
+                public int resultResolve(){
+                    if(roundWinner == enemy) return 1;
+                    //else if(roundWinner == null) return 0;
+                    else return -1;
+                }
+            });
+        }
+
+        if (player.getHP() <= 0) {
+            System.out.println("Game Over! You lost...");
+            logPanel.updateLog(LogPanel.AT_THIRD, "Game over! You lost...", LogPanel.INFO_MSG);
+            isGameOver = true;
+
+        } else if (enemy.getHP() <= 0) {
+            System.out.println("Enemy defeated! You win! ");
+            logPanel.updateLog(LogPanel.AT_THIRD, "Enemy deafeated! You win! ", LogPanel.INFO_MSG);
+            isGameOver = true;
+        }
+        player.getPlayerStats().mineExpired();
+        enemy.getPlayerStats().mineExpired();
+    }
+    
+    /**
+     * the CORE method of this game, which only run in a 1v1 dual
+     * Legecy method
+     * @param playerSelectedActionID accept player input action ID
+     */
+    @SuppressWarnings("unused")
     private void duoPlayerRound(int playerSelectedActionID) {
         {
             player.getPlayerStats().resetDmgDefThief();
@@ -235,11 +350,22 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
         if (roundWinner == null) {// 平局检查
             roundLoser = null;
+            player.getPlayerActions().getEvent().doWhen(
+                ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionEvent.round_tied, 
+                player, 
+                new Players[]{enemy}
+            );
+            enemy.getPlayerActions().getEvent().doWhen(
+                ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionEvent.round_tied, 
+                enemy,
+                new Players[]{player} 
+            );
+
             System.out.println("nothing happened xD");
             logPanel.updateLog(LogPanel.AT_SECEND, "Nothing happened, or not? ", LogPanel.NOTIFY_MSG);
 
-            player.checkHealing(0);
-            enemy.checkHealing(0);
+            //player.checkHealing(0);//legncy
+            //enemy.checkHealing(0);//both legecy
 
             enemy.grasping(new GraspRequest() {
                 @Override
@@ -259,7 +385,16 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
         } else {
             roundLoser = roundWinner == player ? enemy : player;
-            roundWinner.winActivating();
+            roundWinner.getPlayerActions().getEvent().doWhen(
+                ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionEvent.round_win, 
+                roundWinner, 
+                new Players[]{roundLoser}
+            );
+            roundLoser.getPlayerActions().getEvent().doWhen(
+                ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionEvent.round_lost, 
+                roundLoser, 
+                new Players[]{roundWinner}
+            );
 
             /* 以下是伤害计算 */
             int damageDealt = roundWinner.damageDealtTo(roundLoser);
@@ -288,9 +423,9 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
                 if (roundLoser.getPlayerActions().getID() == 101) {// 如果对面是加子弹
 
-                    roundWinner.setAmmoLeft(
-                            roundWinner.getAmmoLeft() + roundLoser.getAmmoLeft());// 偷走对面所有子弹
-                    roundLoser.setAmmoLeft(0);
+                    //roundWinner.setAmmoLeft(
+                    //        roundWinner.getAmmoLeft() + roundLoser.getAmmoLeft());// 偷走对面所有子弹
+                    //roundLoser.setAmmoLeft(0);
                     
                     if (roundWinner == player) {
                         logPanel.updateLog(
@@ -305,11 +440,11 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                     }
 
                 } else if (roundLoser.getPlayerActions().isStealable()) {// 又如果对面的东西可偷
-                    roundWinner.setPlayerActions(roundLoser.getPlayerActions());// 自己的action替换为对面的
-                    roundWinner.winActivating();// 再执行一次动作内容
-                    roundLoser.ammoRetureTo(roundWinner);// 返还实行动作的子弹，因为东西是对面那里偷来的
-                    roundWinner.generalActivating();// 同理
-                    damageDealt = roundWinner.damageDealtTo(roundLoser);// 用偷来的东西对被偷者造成伤害
+                    //roundWinner.setPlayerActions(roundLoser.getPlayerActions());// 自己的action替换为对面的
+                    //roundWinner.winActivating();// 再执行一次动作内容
+                    //roundLoser.ammoRetureTo(roundWinner);// 返还实行动作的子弹，因为东西是对面那里偷来的
+                    //roundWinner.generalActivating();// 同理
+                    //damageDealt = roundWinner.damageDealtTo(roundLoser);// 用偷来的东西对被偷者造成伤害
 
                     if (roundWinner == player) {
                         logPanel.updateLog(
@@ -327,9 +462,9 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                 } else if (roundLoser.getPlayerActions().isStealable() == false) {// 如果不可偷
 
                     if (roundLoser.getPlayerStats().isPolice()) {// 不管对面是警察，子弹照偷不误
-                        roundWinner
-                                .setAmmoLeft(roundWinner.getAmmoLeft() + roundLoser.getAmmoLeft());// 偷走对面所有子弹
-                        roundLoser.setAmmoLeft(0);
+                        //roundWinner
+                        //        .setAmmoLeft(roundWinner.getAmmoLeft() + roundLoser.getAmmoLeft());// 偷走对面所有子弹
+                        //roundLoser.setAmmoLeft(0);
 
                         if (roundWinner == player) {
                             logPanel.updateLog(
@@ -372,10 +507,10 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
             }
 
-            roundWinner.checkHealing(0);// 现阶段只可能是0
-            roundLoser.checkHealing(damageDealt);
+            //roundWinner.checkHealing(0);// 现阶段只可能是0
+            //roundLoser.checkHealing(damageDealt);
 
-            roundLoser.setHP(roundLoser.getHP() - damageDealt);// 败者食尘 xD
+            //roundLoser.setHP(roundLoser.getHP() - damageDealt);// 败者食尘 xD
 
             if (AM_RNGenerator.isActivated) {
                 if (roundWinner == player) {
@@ -392,7 +527,7 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                 AM_RNGenerator.isActivated = false;
             }
 
-            specificProcess(roundWinner.getPlayerActions().getSpecificSign());
+            //specificProcess(roundWinner.getPlayerActions().getSpecificSign());
             enemy.grasping(new GraspRequest() {
 
                 @Override
@@ -457,9 +592,9 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                 int preSelections = player.actionsSelecting(actionID ,player, player.getPlayerStats());
                 if (preSelections == -1) {//返回-1代表子弹不足
                     String msg = "Failed to active the selected action: "
-                            + ActionsLib.searchActions(actionID).getActionNameString() + " ,Because you have "
+                            + ActionX.searchActions(actionID).getActionNameString() + " ,Because you have "
                             + player.getAmmoLeft() +
-                            " ammo out of " + ActionsLib.searchActions(actionID).getAmmoCost() + " ammo requires.";
+                            " ammo out of " + ActionX.searchActions(actionID).getAmmoCost() + " ammo requires.";
                     System.out.println(msg);
                     logPanel.updateLog(LogPanel.AT_FOURTH, msg, LogPanel.ERROR_MSG);
                     break;
@@ -471,9 +606,9 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
                 } else {
 
-                    duoPlayerRound(actionID);
+                    mainRound(actionID);
                     playerStatsPanel.update(player, enemy);
-                    logPanel.updateLog(LogPanel.AT_FOURTH, "You just selected -> " + ActionsLib.getActionName(actionID),
+                    logPanel.updateLog(LogPanel.AT_FOURTH, "You just selected -> " + ActionX.getActionName(actionID),
                             LogPanel.INFO_MSG);
                     break;
                 } // 用于子弹剩余判断，顺便提前诱发空指针

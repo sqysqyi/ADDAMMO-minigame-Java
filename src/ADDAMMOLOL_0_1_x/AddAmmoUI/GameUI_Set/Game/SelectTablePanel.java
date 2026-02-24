@@ -16,8 +16,7 @@ import javax.swing.event.DocumentListener;
 
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Game;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Start;
-import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionsLib;
-
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionX;
 import ADDAMMOLOL_0_1_x.AddAmmoUI.initUI;
 
 public final class SelectTablePanel extends JPanel implements initUI {
@@ -68,8 +67,8 @@ public final class SelectTablePanel extends JPanel implements initUI {
                         tablePanel.add(tableElements[i][j]);
                     }else{
                         int tempID = 100*(i+1)+j;
-                        tableElements[i][j] = new JLabel("| "+tempID+ ": "+ActionsLib.getActionName(tempID) + 
-                                                "\t  ("+ActionsLib.getActionAmmoCost(tempID)+")");
+                        tableElements[i][j] = new JLabel("| "+tempID+ ": "+ActionX.getActionName(tempID) + 
+                                                "\t  ("+ActionX.getActionAmmoCost(tempID)+")");
                         tablePanel.add(tableElements[i][j]);
                     }
                     

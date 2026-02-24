@@ -3,11 +3,11 @@ package ADDAMMOLOL_0_1_x.AddAmmoUtil;
 import java.util.ArrayList;
 import java.util.Random;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Game;
-import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Actions;
-import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionsLib;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.Enemy;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.Player;
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Players.Players;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Action;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionX;
 import Samples.ADDAMMOLOL_0_0_1d.actions;
 import Samples.ADDAMMOLOL_0_0_1d.game;
 
@@ -165,7 +165,7 @@ public enum AM_Decision {
     private static Players p;
     private static int holdingID;
     private static int timer = 0;
-    private static Actions[] result;
+    private static Action[] result;
     private static boolean isOccupied = false;
     
     
@@ -211,25 +211,25 @@ public enum AM_Decision {
         timer ++;
         
         if(timer > 36) end(holdingID, holding ->{
-            Actions r1 = ActionsLib.searchActions(holding);
-            Actions r2 = ActionsLib.ADD_AMMO.toAction();
-            Actions r3 = ActionsLib.DEF.toAction();
-            Actions r4 = ActionsLib.PISTOL_SHOOT.toAction();
+            Action r1 = ActionX.searchActions(holding);
+            Action r2 = ActionX.ADD_AMMO.toAction();
+            Action r3 = ActionX.DEF.toAction();
+            Action r4 = ActionX.PISTOL_SHOOT.toAction();
             System.out.println( "36th");
 
-            return new Actions[]{r1,r2,r3,r4};
+            return new Action[]{r1,r2,r3,r4};
         });
         else {
             decision.answer.doWith( decision.question );
-            System.out.println(decision.decisionDiscription);    
+            //System.out.println(decision.decisionDiscription);    
         }
 
     }
 
-    protected static Actions[] end(int holdingID, Call_End<Actions> ce){
+    protected static Action[] end(int holdingID, Call_End<Action> ce){
         
         if (ce == null) {
-            result = new Actions[]{ActionsLib.searchActions(holdingID)};
+            result = new Action[]{ActionX.searchActions(holdingID)};
         }else {
             result = ce.doFinally(holdingID);
         }
@@ -245,10 +245,10 @@ public enum AM_Decision {
      * @throws IllegalArgumentException
      * @return the finally action array contains what should be chosen from
      */
-    public static Actions[] readResults(){
-        Actions[] temp = result;
+    public static Action[] readResults(){
+        Action[] temp = result;
         if(temp == null) {
-            temp = new Actions[]{ActionsLib.ADD_AMMO.toAction()};
+            temp = new Action[]{ActionX.ADD_AMMO.toAction()};
             throw new IllegalStateException("Must get result AFTER creating logic chain!!!!");
         }
         result = null;
@@ -276,7 +276,7 @@ public enum AM_Decision {
 
     //Q1: Got ambition?
     static final boolean ques2D1(){
-        return ActionsLib.searchActions(holdingID) != null;
+        return ActionX.searchActions(holdingID) != null;
     } 
     static final void ans2D1(Question q){
         if(q.test()){
@@ -289,7 +289,7 @@ public enum AM_Decision {
     
     //Have enough ammo?
     static final boolean ques2D2(){
-        return ActionsLib.searchActions(holdingID).getAmmoCost() <= e.getAmmoLeft();
+        return ActionX.searchActions(holdingID).getAmmoCost() <= e.getAmmoLeft();
     }
     static final void ans2D2(Question q){
         if(q.test()){
@@ -302,7 +302,7 @@ public enum AM_Decision {
     //Should add ammo now?
     static final boolean ques2D3(){
         return 
-        ActionsLib.searchActions(holdingID).getAmmoCost() - e.getAmmoLeft() <= 1 ||
+        ActionX.searchActions(holdingID).getAmmoCost() - e.getAmmoLeft() <= 1 ||
         p.getAmmoLeft() < 1;
     }
     static final void ans2D3(Question q){
@@ -323,7 +323,7 @@ public enum AM_Decision {
     static final void ans2D3_1(Question q){
         if(q.test()){
             end(holdingID, holding ->{
-                return new Actions[]{ActionsLib.ADD_AMMO.toAction()};
+                return new Action[]{ActionX.ADD_AMMO.toAction()};
             });
         }else{
             nextDecision(D_4, holdingID);
@@ -334,7 +334,7 @@ public enum AM_Decision {
     static final boolean ques2D3_2(){
         return 
         (p.getAmmoLeft() - e.getAmmoLeft() >= 2 || Game.global_dangerous > 3) &&
-        e.getAmmoLeft() <= ActionsLib.searchActions(holdingID).getAmmoCost() * 0.7f;
+        e.getAmmoLeft() <= ActionX.searchActions(holdingID).getAmmoCost() * 0.7f;
     }
     static final void ans2D3_2(Question q){
         if(q.test()){
@@ -356,12 +356,12 @@ public enum AM_Decision {
             nextDecision(D_3_2_2, holdingID);
         }else{
             end(holdingID, holding ->{
-                ArrayList<Actions> temp = 
-                ActionsLib.searchWtihCondition(condition ->{
+                ArrayList<Action> temp = 
+                ActionX.searchWtihCondition(condition ->{
                     return condition.getLegit() < 0 && condition.getDangerous() < 0;
                 });
 
-                return temp.toArray(new Actions[temp.size()]);
+                return temp.toArray(new Action[temp.size()]);
             });
         }
     }
@@ -373,12 +373,12 @@ public enum AM_Decision {
     static final void ans2D3_2_2(Question q){
         if(q.test()){
             end(holdingID, holding ->{
-                ArrayList<Actions> temp = 
-                ActionsLib.searchWtihCondition(condition ->{
+                ArrayList<Action> temp = 
+                ActionX.searchWtihCondition(condition ->{
                     return condition.getLegit() < 0 && condition.getDangerous() < 0;
                 });
 
-                return temp.toArray(new Actions[temp.size()]);
+                return temp.toArray(new Action[temp.size()]);
             });
         }else{
             nextDecision(D_5, holdingID);
@@ -434,12 +434,12 @@ public enum AM_Decision {
     static final void ans2D4_3(Question q){
         if(q.test()){
             end(holdingID, holding ->{
-                ArrayList<Actions> temp = 
-                ActionsLib.searchWtihCondition(condition ->{
+                ArrayList<Action> temp = 
+                ActionX.searchWtihCondition(condition ->{
                     return condition.getLegit() > 0 && condition.getDangerous() > 0;
                 });
 
-                return temp.toArray(new Actions[temp.size()]);    
+                return temp.toArray(new Action[temp.size()]);    
             });
         }else{
             nextDecision(D_5, holdingID);
@@ -453,11 +453,11 @@ public enum AM_Decision {
     static final void ans2D5(Question q){
         if(q.test()){
 
-            ArrayList<Actions> poolList = ActionsLib.searchWtihCondition(
+            ArrayList<Action> poolList = ActionX.searchWtihCondition(
                 action->action.getDangerous() > 0 
                 && action.getLegit() == 0 
                 && action.getAmmoCost() <= e.getAmmoLeft());
-            Actions[] pool = poolList.toArray(new Actions[poolList.size()]);
+            Action[] pool = poolList.toArray(new Action[poolList.size()]);
 
             
             holdingID = poolList.size() != 0?pool[new Random().nextInt(pool.length)].getID():holdingID;
@@ -486,10 +486,10 @@ public enum AM_Decision {
     }
     static final void ans2D6_1(Question q){
         if(q.test()){
-            holdingID  = ActionsLib.ABSLOTE_DEF.toAction().getID();
+            holdingID  = ActionX.ABSLOTE_DEF.toAction().getID();
             end(holdingID, null);
         }else{
-            holdingID = ActionsLib.DEF.toAction().getID();
+            holdingID = ActionX.DEF.toAction().getID();
             end(holdingID, null);
         }
     }
@@ -531,7 +531,7 @@ public enum AM_Decision {
         if(q.test()){
             nextDecision(D_7_2, holdingID);
         }else{
-            holdingID = ActionsLib.MISSILE_LAUNCHER.toAction().getID();
+            holdingID = ActionX.MISSILE_LAUNCHER.toAction().getID();
             end(holdingID, null);
         }
     }
@@ -557,7 +557,7 @@ public enum AM_Decision {
         if(q.test()){
             nextDecision(D_8, holdingID);
         }else{
-            holdingID = ActionsLib.MINE.toAction().getID();
+            holdingID = ActionX.MINE.toAction().getID();
             end(holdingID, null);
         }
     }
@@ -583,7 +583,7 @@ public enum AM_Decision {
         if(q.test()){
             nextDecision(D_8_2, holdingID);
         }else{
-            holdingID = ActionsLib.HEALING.toAction().getID();
+            holdingID = ActionX.HEALING.toAction().getID();
             end(holdingID, null);
         }
     }
@@ -593,7 +593,7 @@ public enum AM_Decision {
     }
     static final void ans2D8_2(Question q){
         if(q.test()){
-            holdingID = ActionsLib.HEALING.toAction().getID();
+            holdingID = ActionX.HEALING.toAction().getID();
             end(holdingID, null);
         }else{
             nextDecision(D_9, holdingID);
@@ -611,7 +611,7 @@ public enum AM_Decision {
         if(q.test()){
             nextDecision(D_1, holdingID);
         }else{
-            holdingID = ActionsLib.ADD_AMMO.toAction().getID();
+            holdingID = ActionX.ADD_AMMO.toAction().getID();
             end(holdingID, null);
         }
     }
@@ -628,7 +628,7 @@ public enum AM_Decision {
     }
 
     static final boolean ques2D11(){
-        return p.getHP() <= ActionsLib.searchActions(holdingID).getRawDmg() && p.getAmmoLeft() < 3;
+        return p.getHP() <= ActionX.searchActions(holdingID).getRawDmg() && p.getAmmoLeft() < 3;
     }
     static final void ans2D11(Question q){
         if(q.test()){
@@ -641,7 +641,7 @@ public enum AM_Decision {
     static final boolean ques2D12(){
         return 
         (e.getHP() >= 2 && AM_RNGenerator.newRNG(800)) 
-        || (e.getAmmoLeft() > 6 && ActionsLib.searchActions(holdingID).getLegit() < 0);
+        || (e.getAmmoLeft() > 6 && ActionX.searchActions(holdingID).getLegit() < 0);
     }
     static final void ans2D12(Question q){
         if(q.test()){

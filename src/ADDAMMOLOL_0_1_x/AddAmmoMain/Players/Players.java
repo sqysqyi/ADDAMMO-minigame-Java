@@ -1,23 +1,23 @@
 package ADDAMMOLOL_0_1_x.AddAmmoMain.Players;
 
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Start;
-import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Actions;
-import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionsLib;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Action;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionEvent;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.ActionX;
 import ADDAMMOLOL_0_1_x.AddAmmoUtil.AM_RNGenerator;
 
 public abstract class Players {
     private int HP, ammoLeft;
     private PlayerStats playerStats;
-    // private ActionStats gameStats;
     private String playerNameString;
-    private Actions playerActions;
+    private Action playerActions;
 
     public Players() {
         this.playerStats =  new PlayerStats();
     }
 
     public Players(int HP, int ammoLeft,
-            Actions playerActions, String playerNameString) {
+            Action playerActions, String playerNameString) {
         this.HP = HP;
         this.ammoLeft = ammoLeft;
         this.playerStats =  new PlayerStats();
@@ -57,11 +57,11 @@ public abstract class Players {
         this.ammoLeft = ammoLeft;
     }
 
-    public Actions getPlayerActions() {
+    public Action getPlayerActions() {
         return playerActions;
     }
 
-    public void setPlayerActions(Actions playerActions) {
+    public void setPlayerActions(Action playerActions) {
         this.playerActions = playerActions;
     }
 
@@ -69,8 +69,8 @@ public abstract class Players {
      * getter/setter 分割线*******************************************
      */
 
-    public Actions selectActions(int ID) {
-        Actions actions = ActionsLib.searchActions(ID);
+    public Action selectActions(int ID) {
+        Action actions = ActionX.searchActions(ID);
         return actions;
     }
 
@@ -100,12 +100,14 @@ public abstract class Players {
         return damageDealt;
     }
 
+    /**
+     * Legacy method 
+     */
     public void generalActivating() {
-        this.playerStats.setRawDef(this.getPlayerActions().getRawDef());
-
+        //this.playerStats.setRawDef(this.getPlayerActions().getRawDef());
         int ammoleft = this.getAmmoLeft() - this.getPlayerActions().getAmmoCost();
         this.setAmmoLeft(ammoleft);
-        this.checkIsSteal_or_Police();
+
     }
 
     public void winActivating() {
@@ -130,6 +132,11 @@ public abstract class Players {
             }
 
         }
+    }
+    public void stolenActivated(Action stolenAction, Players stolenFrom){
+        System.out.println("???");
+        getPlayerStats().basicApply(stolenAction);
+        stolenAction.getEvent().doWhen(ActionEvent.round_win, this, new Players[]{stolenFrom} );
     }
 
     /**
@@ -167,15 +174,19 @@ public abstract class Players {
                 return player1;
             } else if (player1.getPlayerStats().isThief()) {
                 /**** add exceptional rules below: */
-                // if(player2.getPlayerStats().isThief()) return null;
+                //if(player2.getPlayerStats().isMineReady()) return player2;
                 /************* */
                 return player1;
+
             } else {
                 return player1;
             }
         } else if (player1Dangerous == player2Dangerous) {
             if (player1Dangerous <= 0)
                 return null;
+            if (player1.getPlayerStats().isPolice() && player2.getPlayerStats().isThief()) return player1;
+            if (player2.getPlayerStats().isPolice() && player1.getPlayerStats().isThief()) return player2; 
+            
             else {
                 // ****add exceptional rules below: */
 
@@ -196,7 +207,7 @@ public abstract class Players {
                 return player2;
             } else if (player2.getPlayerStats().isThief()) {
                 // ***exceptional rules below: */
-                // if(player1.getPlayerStats().isThief()) return null;
+                if(player1.getPlayerStats().isMineReady()) return player1;
                 /************* */
                 return player2;
             } else {
@@ -204,6 +215,10 @@ public abstract class Players {
             }
 
         }
+    }
+
+    public void ammoRefund(Action a){
+        this.ammoLeft += a.getAmmoCost();
     }
 
     @Override
@@ -224,6 +239,17 @@ public abstract class Players {
         private int rawDmg, rawDef;
         private boolean isThief, isPolice, isEngineer;
         private boolean isMissileSettled, isMineReady;
+        private boolean healingFlag;
+
+        private int mineTimer = 0;
+
+        public boolean HealingFlag() {
+            return healingFlag;
+        }
+
+        public void setHealingFlag(boolean healingFlag) {
+            this.healingFlag = healingFlag;
+        }
 
         public boolean isMissileSettled() {
             return isMissileSettled;
@@ -236,9 +262,22 @@ public abstract class Players {
         public boolean isMineReady() {
             return isMineReady;
         }
-
         public void setMineReady(boolean isMineReady) {
+            if(isMineReady){
+                this.mineTimer = 3;
+            }
             this.isMineReady = isMineReady;
+        }
+        public boolean mineExpired(){
+            System.out.println("mine timer: " + this.mineTimer);
+            if(this.mineTimer == 0) {
+                this.setMineReady(false);
+                return true;
+            }
+            else{
+                this.mineTimer -- ;
+                return false; 
+            }     
         }
 
         public int getRawDmg() {
@@ -292,7 +331,18 @@ public abstract class Players {
             this.setThief(false);
             this.setPolice(false);
             this.setEngineer(false);
+            this.setHealingFlag(false);
         }
+
+        /**
+         * This method ONLY affect damage and defense 
+         * @param a the action you would apply on
+         */
+        public void basicApply(Action a){
+            this.setRawDef(a.getRawDef());
+            this.setRawDmg(a.getRawDmg());
+        }
+
 
         public void resetAllSettlements() {
             this.setMissileSettled(false);
@@ -305,7 +355,7 @@ public abstract class Players {
                 return true;
             if (player1Stats.isPolice == player2Stats.isPolice && player1Stats.isPolice == true)
                 return true;
-            if (player1Stats.isThief == player2Stats.isThief && player1Stats.isPolice == true)
+            if (player1Stats.isThief == player2Stats.isThief && player1Stats.isThief == true)
                 return true;
             return false;
         }

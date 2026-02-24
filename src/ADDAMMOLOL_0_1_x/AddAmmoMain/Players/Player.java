@@ -1,6 +1,6 @@
 package ADDAMMOLOL_0_1_x.AddAmmoMain.Players;
 
-import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Actions;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Action;
 
 public class Player extends Players {
 
@@ -8,7 +8,7 @@ public class Player extends Players {
         super();
         //playerActions = new actions();
     }//空参构造
-    public Player(int HP, int ammoLeft, Actions playerActions, String playerNameString) {
+    public Player(int HP, int ammoLeft, Action playerActions, String playerNameString) {
         //playerActions = new actions();
         super(HP, ammoLeft, playerActions, playerNameString);
         
@@ -17,7 +17,7 @@ public class Player extends Players {
 /*************************************getter/setter 分割线******************************************* */ 
     
 
-    public boolean checkEnoughAmmo(Actions actions){
+    public boolean checkEnoughAmmo(Action actions){
         boolean checkEnoughAmmoResult = true;
         if(this.getAmmoLeft() - actions.getAmmoCost() < 0){
             checkEnoughAmmoResult = false;

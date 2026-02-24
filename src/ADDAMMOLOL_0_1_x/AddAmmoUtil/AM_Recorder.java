@@ -1,7 +1,7 @@
 package ADDAMMOLOL_0_1_x.AddAmmoUtil;
 
 import ADDAMMOLOL_0_1_x.AddAmmoMain.Game;
-import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Actions;
+import ADDAMMOLOL_0_1_x.AddAmmoMain.Actions.Action;
 /**
  * A recorder based on an eight-length array
  * 
@@ -73,7 +73,7 @@ public final class AM_Recorder {
             records[i].setSerial(records[i].getSerial() +1);
         }
     }
-    public SubRecord newRecord(Actions enemyActions, Actions thisActions, int result){
+    public SubRecord newRecord(Action enemyActions, Action thisActions, int result){
         return new SubRecord(0,enemyActions, thisActions, result);
     }
 
@@ -143,7 +143,7 @@ public final class AM_Recorder {
      * @return if exist the record match the rules given
      * @see AM_Decision
      */
-    public boolean ifExistBetween(int start, int end, AM_Carrier<Actions> rule){
+    public boolean ifExistBetween(int start, int end, AM_Carrier<Action> rule){
         
         for(SubRecord r: records){
             if(r.getSerial()< start || r.getSerial() > end) continue;
@@ -160,7 +160,7 @@ public final class AM_Recorder {
      * @param rule
      * @return
      */
-    public boolean ifExistBetween(int start, AM_Carrier<Actions> rule){
+    public boolean ifExistBetween(int start, AM_Carrier<Action> rule){
         return ifExistBetween(start<currentSize()-1?start:currentSize()-1 , currentSize() - 1, rule);
     }
     /**
@@ -169,7 +169,7 @@ public final class AM_Recorder {
      * @param lengthTillEnd like recorder [1,2,3,4,5,6,7,8], with parameters (rule,lengthTillEnd),would get the result as:(rule, 3)->> [6,7,8] 
      * @return
      */
-    public boolean ifExistBetween(AM_Carrier<Actions> rule, int lengthTillEnd){
+    public boolean ifExistBetween(AM_Carrier<Action> rule, int lengthTillEnd){
         if(currentSize() -1-lengthTillEnd < 0) return ifExistBetween(0, rule);
         else return ifExistBetween(currentSize()-1-lengthTillEnd, currentSize()-1, rule);
     }
@@ -185,7 +185,7 @@ public final class AM_Recorder {
     }//for debug ueage 
     
     private class SubRecord {
-        private Actions opponentHistory,thisHistory;
+        private Action opponentHistory,thisHistory;
         private int serial,result;
 
         private SubRecord(){
@@ -194,23 +194,23 @@ public final class AM_Recorder {
             this.thisHistory = null;
             this.result = 0;
         }
-        private SubRecord(int serial, Actions opponentHistory, Actions thisHistory, int result) {
+        private SubRecord(int serial, Action opponentHistory, Action thisHistory, int result) {
             this.serial = serial;
             this.opponentHistory = opponentHistory;
             this.thisHistory = thisHistory;
             this.result = result;
         }
 
-        public Actions getOppActions() {
+        public Action getOppActions() {
             return opponentHistory;
         }
-        public void setOppActions(Actions opponentActions) {
+        public void setOppActions(Action opponentActions) {
             this.opponentHistory = opponentActions;
         }
-        public Actions getThisActions() {
+        public Action getThisActions() {
             return thisHistory;
         }
-        public void setThisActions(Actions thisActions) {
+        public void setThisActions(Action thisActions) {
             this.thisHistory = thisActions;
         }
         public int getSerial() {

@@ -25,12 +25,31 @@
         ->healing series
 
 2025/??/??
-    AddAmmoLOL 0.0.2
-    -> 完善enemy的AI逻辑
-
-2025/??/??
     AddAmmoLOL 0.1.0gui
     -> 加入GUI
         ->开始菜单和选择界面
         ->游戏图标
         ->图形元素
+
+2025/10/26
+    AddAmmoLOL 0.1.1 released (edit at 2026/02/23)
+
+2026/02/13
+    AddAmmoLOL 0.1.2 released (edit at 2026/02/23)
+
+2026/02/24
+    AddAmmoLOL 0.1.3 released
+    -> 我会尝试记住更新这个log.txt文件的 D:
+    -> 添加关于导弹发射架(missile launcher)，地雷(mine)，以及其它可能的特殊Action的特殊逻辑
+
+2026/02/24 [ /!\ Plans ]
+    AddAmmoLOL 0.1.4 plan
+    -> 为游戏实例添加事件分发器
+    -> 更好地管理Action的执行与判断
+
+    AddAmmoLOL 0.1.5 plan
+    -> 为电脑绘制一个更加合理的逻辑树，至少像点人:\
+
+    AddAmmoLOL 0.2.0 plan
+    -> 多线程！！！
+    
