@@ -4,5 +4,6 @@ public enum RoundStats {
         WIN,
         TIED,
         LOST,
-        NONE
+        NONE,
+        UNDEFINED;
     }

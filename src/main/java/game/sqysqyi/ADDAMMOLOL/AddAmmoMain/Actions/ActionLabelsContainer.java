@@ -1,7 +1,5 @@
 package game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Actions;
 
-import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Actions.ActionLabel.LabelName;
-
 /**
  * @see ActionLabel
  */

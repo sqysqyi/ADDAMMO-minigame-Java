@@ -1,6 +1,5 @@
 package game.sqysqyi.ADDAMMOLOL.AddAmmoMain;
 
-import static game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Actions.ActionEvent.*;
 import static game.sqysqyi.ADDAMMOLOL.AddAmmoMain.RoundStats.*;
 
 import java.awt.BorderLayout;
@@ -19,6 +18,7 @@ import javax.swing.border.LineBorder;
 import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Actions.Action;
 import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Actions.ActionX;
 import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Comparator.Comparator;
+import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Executor.Executor;
 import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Players.*;
 import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Players.Enemy.GraspRequest;
 import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Players.Players.PlayerStats;
@@ -203,12 +203,77 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
     // above are UI-related initualizations
 
+
     /**
      * the CORE method of this game, which only run in a 1v1 dual
      * 
      * @param playerSelectedActionID accept player input action ID
+     * @since AddAmmo v0.1.4
      */
-    private void mainRound(int playerSelectedActionID){
+    private void mainRound(int playerSelectedActionID) {
+        player.getPlayerStats().resetDmgDefThief();
+        enemy.getPlayerStats().resetDmgDefThief();
+        bonusDamage = 0;
+
+        player.actionsSelecting(playerSelectedActionID,null,playerStats);
+        playerActions = player.selectActions(playerSelectedActionID);
+        player.setPlayerActions(playerActions);// 玩家选择的action
+
+        int enemySelectedActionID = enemy.actionsSelecting(0 /*always 0 here */, player, playerStats);
+        enemyActions = enemy.selectActions(enemySelectedActionID);
+        enemy.setPlayerActions(enemyActions);// enemy电脑自动选择action
+
+        player.getPlayerActions().getEvent().doWhen(
+            NONE, 
+            player);
+
+        enemy.getPlayerActions().getEvent().doWhen(
+            NONE, 
+            enemy);
+
+        gameComparator.building();
+        new Executor(gameComparator.getToDoList().toExecutorTask());
+        enemy.grasping(new GraspRequest() {
+            @Override
+            public void graspTo(AM_Recorder recorder) {
+                recorder.add(recorder.newRecord(
+                    player.getPlayerActions(), 
+                    enemy.getPlayerActions(), 
+                    resultResolve()
+                ));
+            }
+
+            @Override
+            public RoundStats resultResolve() {
+                return enemy.myLastRoundStats(gameComparator);
+            }
+            
+        });
+        gameComparator.getToDoList().reset();
+
+        if (player.getHP() <= 0) {
+            System.out.println("Game Over! You lost...");
+            logPanel.updateLog(LogPanel.AT_THIRD, "Game over! You lost...", LogPanel.INFO_MSG);
+            isGameOver = true;
+
+        } else if (enemy.getHP() <= 0) {
+            System.out.println("Enemy defeated! You win! ");
+            logPanel.updateLog(LogPanel.AT_THIRD, "Enemy deafeated! You win! ", LogPanel.INFO_MSG);
+            isGameOver = true;
+        }
+        player.getPlayerStats().mineExpired();
+        enemy.getPlayerStats().mineExpired();
+    }
+    /**
+     * the CORE method of this game, which only run in a 1v1 dual
+     * will be destroyed in future updates, because of the new game process design
+     * 
+     * @param playerSelectedActionID accept player input action ID
+     * @since AddAmmo v0.1.3 or older?
+     */
+    @SuppressWarnings("unused")
+    @Deprecated
+    private void mainRound_outdate(int playerSelectedActionID){
         player.getPlayerStats().resetDmgDefThief();
         enemy.getPlayerStats().resetDmgDefThief();
         bonusDamage = 0;
@@ -256,8 +321,8 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
                 };
                 @Override
-                public int resultResolve(){
-                    return 0;
+                public RoundStats resultResolve(){
+                    return TIED;
                 }
             });
         }
@@ -292,10 +357,10 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                     ));
                 }
                 @Override
-                public int resultResolve(){
-                    if(roundWinner == enemy) return 1;
-                    //else if(roundWinner == null) return 0;
-                    else return -1;
+                public RoundStats resultResolve(){
+                    if(roundWinner == enemy) return WIN;
+                    //else if(roundWinner == null) return TIED;
+                    else return LOST;
                 }
             });
         }
@@ -318,8 +383,10 @@ public class Game extends JPanel implements FrameSize, ActionListener {
      * the CORE method of this game, which only run in a 1v1 dual
      * Legecy method
      * @param playerSelectedActionID accept player input action ID
+     * @since AddAmmo v0.1.0
      */
     @SuppressWarnings("unused")
+    @Deprecated
     private void duoPlayerRound(int playerSelectedActionID) {
         {
             player.getPlayerStats().resetDmgDefThief();
@@ -386,8 +453,8 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
                 };
                 @Override
-                public int resultResolve(){
-                    return 0;
+                public RoundStats resultResolve(){
+                    return TIED;
                 }
             });
 
@@ -547,10 +614,10 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                     ));
                 }
                 @Override
-                public int resultResolve(){
-                    if(roundWinner == enemy) return 1;
-                    //else if(roundWinner == null) return 0;
-                    else return -1;
+                public RoundStats resultResolve(){
+                    if(roundWinner == enemy) return WIN;
+                    //else if(roundWinner == null) return TIED;
+                    else return LOST;
                 }
             });
 
@@ -601,6 +668,12 @@ public class Game extends JPanel implements FrameSize, ActionListener {
                     logPanel.updateLog(LogPanel.AT_FOURTH, msg, LogPanel.ERROR_MSG);
                     break;
 
+                } else if( preSelections == -3) {//代表选择的动作不存在
+                    System.out.println("The action is NOT exist yet, try another one");
+                    logPanel.updateLog(LogPanel.AT_FOURTH, "/!\\ The action is NOT exist yet, try another one",
+                        LogPanel.ERROR_MSG);
+                    break;
+                
                 } else {
 
                     mainRound(actionID);
@@ -613,12 +686,6 @@ public class Game extends JPanel implements FrameSize, ActionListener {
             } catch (NumberFormatException ex) {
                 System.out.println("Invalid input! ");
                 logPanel.updateLog(LogPanel.AT_FOURTH, "/!\\ Invaild input! -> \"" + input + " \"", LogPanel.ERROR_MSG);
-                break;
-            } catch (NullPointerException ex) {
-                System.out.println("The action is NOT exist yet, try another one");
-                logPanel.updateLog(LogPanel.AT_FOURTH, "/!\\ The action is NOT exist yet, try another one",
-                        LogPanel.ERROR_MSG);
-                ex.printStackTrace();
                 break;
             } catch (Exception ex) {
                 System.out.println("Nice job! How'd f you find such the input-related bug? Report it to me asap!!!");
@@ -713,25 +780,6 @@ public class Game extends JPanel implements FrameSize, ActionListener {
 
         setLayout(new FlowLayout());
         //add(configPanel);
-    }
-
-    @SuppressWarnings("unused")
-    private void specificProcess(int specificSign){
-        switch(specificSign){
-            case(-1):{
-                break;
-            }
-            case(0):{
-                break;
-            }
-            case(1):{
-                break;
-            }
-            default:{
-                break;
-            }
-        }
-
     }
 }
 

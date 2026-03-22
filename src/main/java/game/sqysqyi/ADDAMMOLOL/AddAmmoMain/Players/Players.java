@@ -4,8 +4,11 @@ import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Start;
 import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Actions.Action;
 import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Actions.ActionEvent;
 import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Actions.ActionX;
+import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Comparator.Comparator;
+import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Comparator.Relationship;
 
 import static game.sqysqyi.ADDAMMOLOL.AddAmmoMain.RoundStats.NONE;
+import static game.sqysqyi.ADDAMMOLOL.AddAmmoMain.RoundStats.TIED;
 
 import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.RoundStats;
 import game.sqysqyi.ADDAMMOLOL.AddAmmoUtil.AM_RNGenerator;
@@ -165,6 +168,7 @@ public abstract class Players {
      * @param player2 usually the enemy, doesnt matter tho
      * @return if is NULL, it was a tie round; or return who won
      */
+    @Deprecated
     public static Players Comparing(Players player1, Players player2) {
 
         int player1Dangerous = player1.getPlayerActions().getDangerous();
@@ -229,6 +233,15 @@ public abstract class Players {
 
     public void ammoRefund(Action a){
         this.ammoLeft += a.getAmmoCost();
+    }
+
+    public RoundStats myLastRoundStats(Comparator activeComparator){
+        for(Relationship r: activeComparator.getToDoList()){
+            if(r.from == this){
+                return r.stats;
+            }
+        }
+        return TIED;
     }
 
     @Override

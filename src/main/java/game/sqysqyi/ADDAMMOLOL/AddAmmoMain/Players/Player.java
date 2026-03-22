@@ -1,6 +1,7 @@
 package game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Players;
 
 import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Actions.Action;
+import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Actions.ActionX;
 
 public class Player extends Players {
 
@@ -31,6 +32,8 @@ public class Player extends Players {
             return -1;
         }else if(playerInput == 602 && !playerStats.isMissileSettled){//failing launch missile with no launcher settled
             return -2;
+        }else if(ActionX.isNull(playerInput)){
+            return -3;
         }else{
             return playerInput;
         }

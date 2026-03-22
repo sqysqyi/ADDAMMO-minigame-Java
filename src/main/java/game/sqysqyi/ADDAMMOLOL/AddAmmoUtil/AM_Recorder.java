@@ -1,7 +1,10 @@
 package game.sqysqyi.ADDAMMOLOL.AddAmmoUtil;
 
 import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Game;
+import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.RoundStats;
 import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Actions.Action;
+
+import static game.sqysqyi.ADDAMMOLOL.AddAmmoMain.RoundStats.*;
 /**
  * A recorder based on an eight-length array
  * 
@@ -73,7 +76,7 @@ public final class AM_Recorder {
             records[i].setSerial(records[i].getSerial() +1);
         }
     }
-    public SubRecord newRecord(Action enemyActions, Action thisActions, int result){
+    public SubRecord newRecord(Action enemyActions, Action thisActions, RoundStats result){
         return new SubRecord(0,enemyActions, thisActions, result);
     }
 
@@ -98,15 +101,15 @@ public final class AM_Recorder {
             int l = r.getThisActions().getLegit(), ol = r.getThisActions().getLegit();
             int a = r.getThisActions().getAmmoCost(), oa = r.getOppActions().getAmmoCost();
             
-            if(r.getResult() == 1){
+            if(r.getResult() == WIN){
                 Game.global_dangerous -= d - od;
                 Game.global_legit -= l - ol;
                 Game.global_peace -= a - oa;
-            }else if(r.getResult() == -1 ){
+            }else if(r.getResult() == LOST ){
                 Game.global_dangerous += d - od;
                 Game.global_legit += l - ol;
                 Game.global_peace += a - oa;
-            }else if(r.getResult() == 0){
+            }else if(r.getResult() == TIED){
                 Game.global_dangerous -= Math.max(d, od);
                 Game.global_legit -= Math.max(l, ol);
                 Game.global_peace -= Math.min(a, oa);
@@ -119,10 +122,10 @@ public final class AM_Recorder {
     public int genConfidence(){
         int confidence_cache = 500;
         int internal_counter = 1;
-        int last_result = -2;//as the default result index means: No last result record
+        RoundStats last_result = NONE;//as the default result index means: No last result record
         for(SubRecord r: records){
             internal_counter = r.getResult() == last_result? internal_counter++:1;
-            confidence_cache = r.getResult() <= 0 ? confidence_cache - 4*internal_counter:confidence_cache + 6*internal_counter;
+            confidence_cache = r.getResult() != WIN ? confidence_cache - 4*internal_counter:confidence_cache + 6*internal_counter;
             last_result = r.getResult();
         }
         return confidence_cache;
@@ -147,8 +150,8 @@ public final class AM_Recorder {
         
         for(SubRecord r: records){
             if(r.getSerial()< start || r.getSerial() > end) continue;
-            if((rule.matchWith(r.getThisActions()) && r.getResult() == this_lost) 
-                || (rule.matchWith(r.getOppActions()) && r.getResult() == this_win)){
+            if((rule.matchWith(r.getThisActions()) && r.getResult() == LOST) 
+                || (rule.matchWith(r.getOppActions()) && r.getResult() == WIN)){
                 return true;
             }
         }
@@ -186,15 +189,16 @@ public final class AM_Recorder {
     
     private class SubRecord {
         private Action opponentHistory,thisHistory;
-        private int serial,result;
+        private int serial;
+        private RoundStats result;
 
         private SubRecord(){
             this.serial = -1;
             this.opponentHistory = null;
             this.thisHistory = null;
-            this.result = 0;
+            this.result = TIED;
         }
-        private SubRecord(int serial, Action opponentHistory, Action thisHistory, int result) {
+        private SubRecord(int serial, Action opponentHistory, Action thisHistory, RoundStats result) {
             this.serial = serial;
             this.opponentHistory = opponentHistory;
             this.thisHistory = thisHistory;
@@ -219,10 +223,10 @@ public final class AM_Recorder {
         public void setSerial(int serial) {
             this.serial = serial;
         }
-        public int getResult() {
+        public RoundStats getResult() {
             return result;
         }
-        public void setResult(int result) {
+        public void setResult(RoundStats result) {
             this.result = result;
         }
 

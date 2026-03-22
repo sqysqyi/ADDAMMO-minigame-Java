@@ -33,25 +33,29 @@ public class ToDoRegister<R> implements Iterable<R>{
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public R getNext(int pointer){
+        try {
+            if(regItems[pointer + 1] != null){
+                return (R)regItems[pointer + 1];
+            }
+            return null;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public boolean reset(){
         try {
             regItems = new Object[size];
+            pointer = 0;
             return true;
         } catch (RuntimeException e) {
             e.printStackTrace();
             return false;
         }
     }
-
-    public void read_and_active(){
-        for(Object element: regItems){
-            if(element != null){
-
-            }
-            else return;
-        }
-    }
-
     public ToDoRegister<R> toExecutorTask(){
         return this;
     }
@@ -70,11 +74,9 @@ public class ToDoRegister<R> implements Iterable<R>{
                 return cursor < size && regItems[cursor] != null;
             }
 
-            //@SuppressWarnings("unchecked")
             @SuppressWarnings("unchecked")
             @Override
-            public R next() {
-                
+            public R next() {    
                 return (R)regItems[cursor++];
             }
             

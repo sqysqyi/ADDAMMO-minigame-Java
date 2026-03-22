@@ -270,14 +270,6 @@ public enum ActionX{
     }
     //************************************************************************************ */
 
-    public static ArrayList<Action> toID_list(ArrayList<Action> source){
-        ArrayList<Action> result = new ArrayList<>();
-        for (Action element: source){
-            result.add(element);
-        }
-        return result;
-    }
-
     public static ArrayList<Action> searchWtihCondition(Predicate<Action> conditon){
         return 
         getAll()

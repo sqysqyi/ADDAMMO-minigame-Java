@@ -1,6 +1,7 @@
 package game.sqysqyi.ADDAMMOLOL;
 
 import static game.sqysqyi.ADDAMMOLOL.AddAmmoMain.RoundStats.NONE;
+import static game.sqysqyi.ADDAMMOLOL.AddAmmoMain.RoundStats.UNDEFINED;
 
 import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Game;
 import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Comparator.Relationship;
@@ -11,20 +12,14 @@ import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Players.Player;
 
 public class Test {
     public static void main(String[] args) {
-        System.out.println(ToDoRegister.size);
-    }
-    
-    
-    /*public static void main(String[] args) {
         Player p = new Player();
         Enemy e = new Enemy();
         ToDoRegister<Relationship> toDoes = new ToDoRegister<>();
-        toDoes.add(new Relationship(p, e, NONE));
-        toDoes.add(new Relationship(p, e, NONE));
-        toDoes.add(new Relationship(p, e, NONE));
+        toDoes.add(new Relationship(p, e, UNDEFINED));
+        toDoes.add(new Relationship(e, p, UNDEFINED));
         new Executor(toDoes);
         toDoes.reset();
-    }*/
+    }
 
     /*private long window;
 

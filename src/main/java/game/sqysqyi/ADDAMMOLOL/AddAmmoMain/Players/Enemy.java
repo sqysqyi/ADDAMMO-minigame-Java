@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Random;
 
+import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.RoundStats;
 import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Actions.Action;
 import game.sqysqyi.ADDAMMOLOL.AddAmmoMain.Actions.ActionX;
 import game.sqysqyi.ADDAMMOLOL.AddAmmoUtil.AM_Decision;
@@ -154,7 +155,7 @@ public class Enemy extends Players {
          * @return 1:enemy win, 0:tied, -1:this enemy lost
          * @see AddAmmoMain.Game
          */
-        int resultResolve();
+        RoundStats resultResolve();
 
     }
 }
