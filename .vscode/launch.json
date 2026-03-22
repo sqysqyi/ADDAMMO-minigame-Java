@@ -6,6 +6,34 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "game.sqysqyi.ADDAMMOLOL.Main",
+            "projectName": "AddAmmo"
+        },
+        {
+            "type": "java",
+            "name": "Test",
+            "request": "launch",
+            "mainClass": "game.sqysqyi.ADDAMMOLOL.Test",
+            "projectName": "AddAmmo"
+        },
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "ADDAMMOLOL_0_1_x.Main",
+            "projectName": "AddAmmo"
+        },
+        {
+            "type": "java",
+            "name": "Test",
+            "request": "launch",
+            "mainClass": "ADDAMMOLOL_0_1_x.Test",
+            "projectName": "AddAmmo"
+        },
+        {
+            "type": "java",
             "name": "testSample",
             "request": "launch",
             "mainClass": "Samples.ADDAMMOLOLprelevel.testSample",
