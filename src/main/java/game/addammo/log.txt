@@ -1,0 +1,60 @@
+2025/07/10
+    AddAmmoLOL 0.0.1a
+    ->确定游戏机制和大致框架
+        ->能把main跑起来就是胜利
+    ->添加三个基本actions
+        ->addAmmo, pistol shhot, defense
+
+    <!>该副本并没有成功如期运行，且被删除<!>
+
+2025/07/20
+    AddAmmoLOL 0.0.1b
+    ->添加基本伤害计算和子弹计算、判别等基本功能
+    ->添加thief police
+        ->添加基本的子弹/actions偷窃和正义制裁
+    ->游戏现在终于能跑起来了:D
+
+2025/08/05
+    AddAmmoLOL 0.0.1c
+    ->完善文件结构
+        ->将原player enemy中的部分共性内容提至新的mainplayer父类中，调整了前两者的继承关系
+
+    ->新增更多的actions
+        ->add double ammo
+        ->more thief and cops
+        ->healing series
+
+2025/??/??
+    AddAmmoLOL 0.1.0gui
+    -> 加入GUI
+        ->开始菜单和选择界面
+        ->游戏图标
+        ->图形元素
+
+2025/10/26
+    AddAmmoLOL 0.1.1 released (edit at 2026/02/23)
+
+2026/02/13
+    AddAmmoLOL 0.1.2 released (edit at 2026/02/23)
+
+2026/02/24
+    AddAmmoLOL 0.1.3 released
+    -> 我会尝试记住更新这个log.txt文件的 D:
+    -> 添加关于导弹发射架(missile launcher)，地雷(mine)，以及其它可能的特殊Action的特殊逻辑
+
+2026/03/22
+    AddAmmoLOL 0.1.3 released
+    -> 为游戏实例添加事件分发器
+    -> 更好地管理Action的执行与判断
+
+2026/03/22 [ /!\ Plans ]
+    
+    AddAmmoLOL 0.2.0 plan
+    -> 多线程！！！
+    -> 看AWT的事件分发线程有点不爽
+
+    AddAmmoLOL 0.2.1 plan
+    -> 为电脑绘制一个更加合理的逻辑树，至少像点人:\
+
+    
+    
