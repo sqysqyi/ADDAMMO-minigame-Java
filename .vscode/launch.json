@@ -8,6 +8,20 @@
             "type": "java",
             "name": "Main",
             "request": "launch",
+            "mainClass": "game.addammo.Main",
+            "projectName": "addammo"
+        },
+        {
+            "type": "java",
+            "name": "Test",
+            "request": "launch",
+            "mainClass": "game.addammo.InternalTests.Test",
+            "projectName": "addammo"
+        },
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
             "mainClass": "game.sqysqyi.ADDAMMOLOL.Main",
             "projectName": "AddAmmo"
         },

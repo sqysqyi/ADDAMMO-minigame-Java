@@ -154,7 +154,7 @@ public class Enemy extends Players {
          * local method used while enemy grasping round result
          * @param winner from Game.java
          * @return 1:enemy win, 0:tied, -1:this enemy lost
-         * @see AddAmmoMain.Game
+         * @see Game_t.Game
          */
         RoundStats resultResolve();
 
