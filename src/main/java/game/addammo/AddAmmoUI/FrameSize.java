@@ -1,12 +1,12 @@
 package game.addammo.AddAmmoUI;
 
-import game.addammo.AddAmmoMain.Start;
+import static game.addammo.StartConfig.*;
 
 public interface FrameSize {
     //game frame size
-    public static final int Frame_SIZE_WIDTH = Start.FRAME_WIDTH;
+    public static final int Frame_SIZE_WIDTH = WINDOW_WIDTH;
 
-    public static final int Frame_SIZE_HEIGHT = Start.FRAME_HEIGHT;
+    public static final int Frame_SIZE_HEIGHT = WINDOW_HEIGHT;
 
     //select table size
     public static final int ST_SIZE_H = Frame_SIZE_HEIGHT/2;

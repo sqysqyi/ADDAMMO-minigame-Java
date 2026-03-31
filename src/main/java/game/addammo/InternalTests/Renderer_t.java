@@ -1,36 +1,40 @@
 package game.addammo.InternalTests;
 
+import game.addammo.AddAmmoMain.Game;
+import game.addammo.AddAmmoUI.GameConfigPanel;
+import game.addammo.AddAmmoUI.StartingMenuPanel;
+import game.addammo.AddAmmoUI.StartingMenuPanel.StartingButtonsListener;
+
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
 import java.awt.FlowLayout;
 
-import game.addammo.AddAmmoMain.Game;
-import game.addammo.AddAmmoUI.gameRender.GameConfigPanel;
-import game.addammo.AddAmmoUI.gameRender.StartingMenuPanel;
-import game.addammo.AddAmmoUI.gameRender.StartingMenuPanel.StartingButtonsListener;
-
-public class TestStart implements Runnable{
-    
-    public static String version_t= "0.1.4t";
-
+public class Renderer_t implements Runnable {
 
     public static int FRAME_HEIGHT = 600;
     public static int FRAME_WIDTH = 800;
 
-    public Game game;
     private StartingMenuPanel startingMenuPanel;
     private GameConfigPanel configPanel;
 
-    public static int setMaxHP = 3;
-    public static int setDefaultAmmo = 1;
-    public static final int setMaxPlayers = 2;
+    JFrame gameFrame = new JFrame("ADD AMMO test v" + Start_t.version_t);
 
-    JFrame gameFrame = new JFrame("ADD AMMO test mode v" + version_t);
+    public Renderer_t() {
 
+    }
+
+    /**
+     * Currently this thread need be created as an EDT.
+     */
     @Override
     public void run() {
-        System.out.println("testing...");
-
-        initWindow();
+        gameFrame.setResizable(false);
+        gameFrame.setIconImage(null);
+        gameFrame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+        gameFrame.setLocationRelativeTo(null); // 窗口居中
+        gameFrame.setVisible(true);
+        gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         startingMenuPanel = new StartingMenuPanel();
         startingMenuPanel.addStartingButtonsListener(new StartingButtonsListener() {
             @Override
@@ -49,7 +53,6 @@ public class TestStart implements Runnable{
                 configPanel.addConfigConfirmListener(() -> {
                     gameFrame.remove(gameFrame.getContentPane());
 
-                    restartGames();
                 });
                 startingMenuPanel.add(configPanel);
                 startingMenuPanel.revalidate();
@@ -59,21 +62,17 @@ public class TestStart implements Runnable{
         gameFrame.setContentPane(startingMenuPanel);
 
     }
-    void initWindow(){
-        gameFrame.setResizable(false);
-        gameFrame.setIconImage(null);
-        gameFrame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
-        gameFrame.setLocationRelativeTo(null); // 窗口居中
-        gameFrame.setVisible(true);
-        gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
 
-    void restartGames(){
+    private void restartGames() {
+
         try {
-            new Game_t();
-        } catch (Exception e) {
+            //game = new Game();
+            gameFrame.setContentPane(new ClientRender_t());
+            gameFrame.revalidate();
+            gameFrame.repaint();
+        } catch (Exception e1) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            e1.printStackTrace();
         }
     }
 }

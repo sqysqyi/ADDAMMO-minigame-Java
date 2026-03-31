@@ -1,16 +1,12 @@
 package game.addammo.AddAmmoMain.players;
 
-import static game.addammo.AddAmmoMain.RoundStats.NONE;
-import static game.addammo.AddAmmoMain.RoundStats.TIED;
+import static game.addammo.AddAmmoMain.RoundStats.*;
 
 import game.addammo.AddAmmoMain.RoundStats;
-import game.addammo.AddAmmoMain.Start;
 import game.addammo.AddAmmoMain.actions.Action;
-import game.addammo.AddAmmoMain.actions.ActionEvent;
 import game.addammo.AddAmmoMain.actions.ActionX;
 import game.addammo.AddAmmoMain.comparator.Comparator;
 import game.addammo.AddAmmoMain.comparator.Relationship;
-import game.addammo.AddAmmoUtil.AM_RNGenerator;
 
 public abstract class Players {
     private int HP, ammoLeft;
@@ -75,76 +71,13 @@ public abstract class Players {
         this.playerActions = playerActions;
     }
 
-    /*************************************
-     * getter/setter 分割线*******************************************
-     */
+
 
     public Action selectActions(int ID) {
         Action actions = ActionX.searchActions(ID);
         return actions;
     }
 
-    public void checkIsSteal_or_Police() {
-        if (this.getPlayerActions().getLegit() < 0 && !this.playerStats.isPolice) {
-            this.playerStats
-            .setThief(true)
-            .setPolice(false);
-        } else if (this.getPlayerActions().getLegit() > 0 && !this.playerStats.isThief) {
-            this.playerStats
-            .setPolice(true)
-            .setThief(false);
-        }
-    }
-
-    public void setStateDefault() {
-        this.playerStats.resetDmgDefThief();
-        this.ammoLeft = 1;
-        this.HP = 3;
-    }
-
-    public int damageDealtTo(Players target) {
-        int damageDealt = 0;
-
-        damageDealt = this.getPlayerActions().getRawDmg() - target.getPlayerActions().getRawDef();
-        if (damageDealt < 0) {
-            damageDealt = 0;
-        }
-        return damageDealt;
-    }
-
-    /**
-     * Legacy method 
-     */
-    public void generalActivating() {
-        //this.playerStats.setRawDef(this.getPlayerActions().getRawDef());
-        int ammoleft = this.getAmmoLeft() - this.getPlayerActions().getAmmoCost();
-        this.setAmmoLeft(ammoleft);
-
-    }
-
-    public void winActivating() {
-        // player.setRawDef(playerActions.getRawDef());
-        this.playerStats.setRawDmg(this.getPlayerActions().getRawDmg());
-
-    }
-
-    public void ammoRetureTo(Players player) {// return your ammo as succeed in stealing enemy's non_addammo actions
-
-        int newAmmoAmount = player.getAmmoLeft() + this.getPlayerActions().getAmmoCost();
-        player.setAmmoLeft(newAmmoAmount);
-    }
-
-    public void checkHealing(int damageReceived) {
-        if (this.playerActions.getID() == 701) {
-            if (damageReceived <= 0 && this.HP < Start.setMaxHP) {
-                this.HP += 1;
-                System.out.println("debug");
-            } else if (damageReceived > 0) {
-                this.HP -= damageReceived;
-            }
-
-        }
-    }
     public void stolenActivated(Action stolenAction, Players stolenFrom){
         System.out.println("???");
         getPlayerStats().basicApply(stolenAction);
@@ -160,75 +93,6 @@ public abstract class Players {
      * @return the final action ID
      */
     public abstract int actionsSelecting(int input, Player player, PlayerStats playerStats);
-
-    /**
-     * Comparing players' actions and give out whoever win this round
-     * @param player1 usually the player
-     * @param player2 usually the enemy, doesnt matter tho
-     * @return if is NULL, it was a tie round; or return who won
-     */
-    @Deprecated
-    public static Players Comparing(Players player1, Players player2) {
-
-        int player1Dangerous = player1.getPlayerActions().getDangerous();
-        int player2Dangerous = player2.getPlayerActions().getDangerous();
-
-        if (PlayerStats.equalWithOnce(player1.getPlayerStats(), player2.getPlayerStats()))
-            return null;// 先把同行剔除
-        if (player1Dangerous > player2Dangerous) {
-            if (player1.getPlayerStats().isPolice) {
-                // ***add exceptional rules below: */
-                // if(player2.getPlayerActions().getID() == 701) return null;
-                if (player2.getPlayerStats().isEngineer)
-                    return null;
-                if (player2Dangerous <= 0)
-                    return null;
-                /************* */
-                return player1;
-            } else if (player1.getPlayerStats().isThief) {
-                /**** add exceptional rules below: */
-                //if(player2.getPlayerStats().isMineReady()) return player2;
-                /************* */
-                return player1;
-
-            } else {
-                return player1;
-            }
-        } else if (player1Dangerous == player2Dangerous) {
-            if (player1Dangerous <= 0)
-                return null;
-            if (player1.getPlayerStats().isPolice && player2.getPlayerStats().isThief) return player1;
-            if (player2.getPlayerStats().isPolice && player1.getPlayerStats().isThief) return player2; 
-            
-            else {
-                // ****add exceptional rules below: */
-
-                /************** */
-                AM_RNGenerator.isActivated = true;
-                return AM_RNGenerator.rateGenerator(50) ? player1 : player2;
-
-            }
-        } else {
-            if (player2.getPlayerStats().isPolice) {
-                // ***add exceptional rules below: */
-                // if(player1.getPlayerStats().isPolice()) return null;
-                if (player1.getPlayerStats().isEngineer)
-                    return null;
-                if (player1Dangerous <= 0)
-                    return null;
-                /************* */
-                return player2;
-            } else if (player2.getPlayerStats().isThief) {
-                // ***exceptional rules below: */
-                if(player1.getPlayerStats().isMineReady) return player1;
-                /************* */
-                return player2;
-            } else {
-                return player2;
-            }
-
-        }
-    }
 
     public void ammoRefund(Action a){
         this.ammoLeft += a.getAmmoCost();

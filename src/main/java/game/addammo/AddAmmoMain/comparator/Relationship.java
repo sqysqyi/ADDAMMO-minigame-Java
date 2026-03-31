@@ -14,7 +14,13 @@ public class Relationship {
     }
 
     public void execute(){
+        if(to.getPlayerStats().healingFlag){
+            from.getPlayerStats().rawDmg *= 2;
+        }
         from.getPlayerActions().actionEvent.doWhen(stats, from, new Players[]{to});
+        if(to.getPlayerStats().healingFlag){
+            from.getPlayerStats().rawDmg *= 0.5;
+        }
     }
 
 }

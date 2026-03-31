@@ -38,5 +38,13 @@ public class PlayerMngr {
         players = new Players[Game.NUMBER_OF_ENEMIES + 1];
     };
 
+    public boolean isSomeoneDead(){
+        for(Players p : players){
+            if(p.getHP() <= 0){
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

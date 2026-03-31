@@ -10,7 +10,10 @@ import game.addammo.AddAmmoMain.players.Players;
 import game.addammo.AddAmmoMain.players.Players.PlayerStats;
 import game.addammo.AddAmmoUtil.AM_RNGenerator;
 
-
+/**
+ * Currently available comparator(s) is only comparator_1v1.
+ * Use <code>Comparator.loadComparator(playerManager)</code> to load a matched comparator.
+ */
 public abstract class Comparator implements RelationshipBuilder{
 
     ToDoRegister<Relationship> toDoList = new ToDoRegister<>();
@@ -75,7 +78,6 @@ class Comparator_1v1 extends Comparator{
     }
     @Override
     public void building() {
-        //Players major = findMajorPlayer(thisPlayer,opponent);
         comparing(thisPlayer, opponent);
         comparing(opponent, thisPlayer);
     }
@@ -86,33 +88,33 @@ class Comparator_1v1 extends Comparator{
 
         if (PlayerStats.equalWithOnce(player1.getPlayerStats(), player2.getPlayerStats())){
             // 先把同行剔除
-            toDoList.add(new Relationship(player1, player2, RoundStats.TIED));
+            toDoList.add(new Relationship(player1, player2, TIED));
             return;
         }
 
         if(player1.getPlayerStats().isPolice){
             //非criminals则忽略
             if(!tempContainer2.hasLabel(CRIMINALS)){
-                toDoList.add(new Relationship(player1, player2, RoundStats.TIED));
+                toDoList.add(new Relationship(player1, player2, TIED));
                 return;
             }else{
                 //是crims
                 if(!player2.getPlayerStats().isThief){
                     //非thief类crims
                     if(tempContainer1.getIntensity(POLICES) > tempContainer2.getIntensity(CRIMINALS)){
-                        toDoList.add(new Relationship(player1, player2, RoundStats.WIN));
+                        toDoList.add(new Relationship(player1, player2, WIN));
                     }else if(tempContainer1.getIntensity(POLICES) == tempContainer2.getIntensity(CRIMINALS)){
-                        toDoList.add(new Relationship(player1, player2, RoundStats.UNDEFINED));//需要在Executor中接着处理
+                        toDoList.add(new Relationship(player1, player2, UNDEFINED));//需要在Executor中接着处理
                     }else{
-                        toDoList.add(new Relationship(player1, player2, RoundStats.LOST));
+                        toDoList.add(new Relationship(player1, player2, LOST));
                     }
                     return;
                 }else{
                     //thief类crims
                     if(tempContainer1.getIntensity(POLICES) >= tempContainer2.getIntensity(CRIMINALS)){
-                        toDoList.add(new Relationship(player1, player2, RoundStats.WIN));
+                        toDoList.add(new Relationship(player1, player2, WIN));
                     }else{
-                        toDoList.add(new Relationship(player1, player2, RoundStats.LOST));
+                        toDoList.add(new Relationship(player1, player2, LOST));
                     }
                     return;
                 }
@@ -124,40 +126,40 @@ class Comparator_1v1 extends Comparator{
             if(player1.getPlayerStats().isThief){
                 if(!tempContainer2.hasLabel(CAN_BE_STOLEN)){
                     //盗贼盗窃非可被盗物品，视为平
-                    toDoList.add(new Relationship(player1, player2, RoundStats.TIED));
+                    toDoList.add(new Relationship(player1, player2, TIED));
                     return;
                 }else if(tempContainer2.hasLabel(CRIMINALS)){
                     if(tempContainer1.getIntensity(CRIMINALS) > tempContainer2.getIntensity(CRIMINALS)){
-                        toDoList.add(new Relationship(player1, player2, RoundStats.WIN));
+                        toDoList.add(new Relationship(player1, player2, WIN));
                     }else{
-                        toDoList.add(new Relationship(player1, player2, RoundStats.LOST));
+                        toDoList.add(new Relationship(player1, player2, LOST));
                     }
                     return;
                 }else if(tempContainer2.hasLabel(POLICES)){
                     if(tempContainer1.getIntensity(CRIMINALS) > tempContainer2.getIntensity(POLICES)){
-                        toDoList.add(new Relationship(player1, player2, RoundStats.WIN));
+                        toDoList.add(new Relationship(player1, player2, WIN));
                     }else if(tempContainer1.getIntensity(CRIMINALS) == tempContainer2.getIntensity(POLICES)){
-                        toDoList.add(new Relationship(player1, player2, RoundStats.UNDEFINED));
+                        toDoList.add(new Relationship(player1, player2, UNDEFINED));
                     }else{
-                        toDoList.add(new Relationship(player1, player2, RoundStats.LOST));
+                        toDoList.add(new Relationship(player1, player2, LOST));
                     }
                     return;
                 }else{
                     //偷不明白，放弃，视为平
-                    toDoList.add(new Relationship(player1, player2, RoundStats.TIED));
+                    toDoList.add(new Relationship(player1, player2, WIN));
                     return;
                 }
             }else{
                 if(tempContainer2.hasLabel(CRIMINALS)){
                     if(tempContainer1.getIntensity(CRIMINALS) > tempContainer2.getIntensity(CRIMINALS)){
-                        toDoList.add(new Relationship(player1, player2, RoundStats.WIN));
+                        toDoList.add(new Relationship(player1, player2, WIN));
                         return;
                     }else if(tempContainer1.getIntensity(CRIMINALS) == tempContainer2.getIntensity(CRIMINALS)){
                         if(player1.getPlayerStats().rawDmg != 0 && player2.getPlayerStats().rawDmg != 0){
-                            toDoList.add(new Relationship(player1, player2, RoundStats.UNDEFINED));
+                            toDoList.add(new Relationship(player1, player2, UNDEFINED));
                             return;
                         }else if(player1.getPlayerStats().rawDmg == 0 && player2.getPlayerStats().rawDmg == 0){
-                            toDoList.add(new Relationship(player1, player2, RoundStats.TIED));
+                            toDoList.add(new Relationship(player1, player2, TIED));
                             return;
                         }else{
                             RoundStats stats = player1.getPlayerStats().rawDmg != 0?WIN:LOST;
@@ -165,21 +167,21 @@ class Comparator_1v1 extends Comparator{
                             return;
                         }
                     }else{
-                        toDoList.add(new Relationship(player1, player2, RoundStats.LOST));
+                        toDoList.add(new Relationship(player1, player2, LOST));
                         return;
                     }
                 }else if(tempContainer2.hasLabel(POLICES)){
                     if(tempContainer1.getIntensity(CRIMINALS) > tempContainer2.getIntensity(POLICES)){
-                        toDoList.add(new Relationship(player1, player2, RoundStats.WIN));
+                        toDoList.add(new Relationship(player1, player2, WIN));
                     }else if(tempContainer1.getIntensity(CRIMINALS) == tempContainer2.getIntensity(POLICES)){
-                        toDoList.add(new Relationship(player1, player2, RoundStats.UNDEFINED));
+                        toDoList.add(new Relationship(player1, player2, UNDEFINED));
                     }else{
-                        toDoList.add(new Relationship(player1, player2, RoundStats.LOST));
+                        toDoList.add(new Relationship(player1, player2, LOST));
                     }
                     return;
                 }else{
                     //对手啥都不是，视为成功
-                    toDoList.add(new Relationship(player1, player2, RoundStats.WIN));
+                    toDoList.add(new Relationship(player1, player2, WIN));
                     return;
                 }       
             }
@@ -187,11 +189,11 @@ class Comparator_1v1 extends Comparator{
         //既不是警察也不是罪犯，你总得是什么东西罢
         if(true){
             if(tempContainer2.hasLabel(POLICES)){
-                toDoList.add(new Relationship(player1, player2, RoundStats.TIED));
+                toDoList.add(new Relationship(player1, player2, TIED));
             }else if(tempContainer2.hasLabel(CRIMINALS)){
-                toDoList.add(new Relationship(player1, player2, RoundStats.LOST));
+                toDoList.add(new Relationship(player1, player2, LOST));
             }else{
-                toDoList.add(new Relationship(player1, player2, RoundStats.TIED));
+                toDoList.add(new Relationship(player1, player2, TIED));
             }
             return;
         }

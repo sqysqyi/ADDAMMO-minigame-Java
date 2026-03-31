@@ -151,8 +151,6 @@ public enum ActionX{
     private final String actionName;
     private final int ammoCost;
     private final int dangerous;
-    private final int legit;
-    private final boolean isStealable;
     private final int rawDmg;
     private final int rawDef;
     private final String actionDescription;
@@ -163,8 +161,7 @@ public enum ActionX{
     ActionX(
         int ID, String actionName, int ammoCost,
         String actionDescription,
-        int dangerous, int rawDmg, int rawDef, int legit,
-        boolean isStealable,
+        int dangerous, int rawDmg, int rawDef,
         ActionEvent actionEvent){
             this.ID = ID;
             this.actionName = actionName;
@@ -173,8 +170,6 @@ public enum ActionX{
             this.dangerous = dangerous;
             this.rawDmg = rawDmg;
             this.rawDef = rawDef;
-            this.legit = legit;
-            this.isStealable = isStealable;
             this.actionEvent = actionEvent;
             this.labelsContainer = null;
         }
@@ -192,8 +187,6 @@ public enum ActionX{
             this.dangerous = dangerous;
             this.rawDmg = rawDmg;
             this.rawDef = rawDef;
-            this.legit = legit;
-            this.isStealable = isStealable;
             this.actionEvent = actionEvent;
             this.labelsContainer = labelsContainer;
             
@@ -201,8 +194,9 @@ public enum ActionX{
 
     public Action toAction(){
         return new Action(
-            ID, actionName, ammoCost, dangerous, legit, 
-            actionEvent,isStealable, rawDmg, rawDef,
+            ID, actionName, ammoCost, 
+            dangerous, rawDmg, rawDef,
+            actionEvent,
             labelsContainer);
     }
     /************************************************************************************* */

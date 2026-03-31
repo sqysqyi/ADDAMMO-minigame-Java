@@ -1,4 +1,4 @@
-package game.addammo.AddAmmoUI.gameRender.game;
+package game.addammo.AddAmmoUI.game;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -15,9 +15,9 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import game.addammo.AddAmmoMain.Game;
-import game.addammo.AddAmmoMain.Start;
 import game.addammo.AddAmmoMain.actions.ActionX;
 import game.addammo.AddAmmoUI.initUI;
+import static game.addammo.StartConfig.*;
 
 public final class SelectTablePanel extends JPanel implements initUI {
     JTextField playerInputTextField;
@@ -46,19 +46,19 @@ public final class SelectTablePanel extends JPanel implements initUI {
                 protected void paintComponent(Graphics g) {
                     super.paintComponent(g);
                     if (getText().isEmpty() && !isFocusOwner()) {
-                    g.setColor(Color.GRAY);
+                        g.setColor(Color.GRAY);
                         g.drawString("Action code", 5,
                                 getHeight() / 2 + g.getFontMetrics().getAscent() / 2 - 2);
                     }
                 }
             };
-            playerInputTextField.setPreferredSize(new Dimension(Start.FRAME_WIDTH-10, 20));
+            playerInputTextField.setPreferredSize(new Dimension(WINDOW_WIDTH-10, 20));
 
         
         
 
             tablePanel = new JPanel(new GridLayout(9,4,2,2));
-            tablePanel.setPreferredSize(new Dimension(Start.FRAME_WIDTH, Start.FRAME_HEIGHT/2-90));
+            tablePanel.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT/2-90));
             
             for(int i = 0; i< tableElements.length; i++){
                 for (int j = 0; j < tableElements[i].length; j++) {

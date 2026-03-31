@@ -1,9 +1,14 @@
 package game.addammo.AddAmmoMain.players.enemies;
 
+import static game.addammo.AddAmmoMain.actions.ActionLabel.LabelName.CRIMINALS;
+import static game.addammo.AddAmmoMain.actions.ActionLabel.LabelName.POLICES;
+import static game.addammo.AddAmmoMain.actions.ActionLabel.LabelName.THIEVES;
+
 import java.util.ArrayList;
 import java.util.Random;
 
 import game.addammo.AddAmmoMain.Game;
+import game.addammo.AddAmmoMain.GameClient;
 import game.addammo.AddAmmoMain.actions.Action;
 import game.addammo.AddAmmoMain.actions.ActionX;
 import game.addammo.AddAmmoMain.players.Player;
@@ -221,7 +226,7 @@ public enum Decider {
         });
         else {
             decision.answer.doWith( decision.question );
-            System.out.println(decision.decisionDiscription);    
+            //System.out.println(decision.decisionDiscription);    
         }
 
     }
@@ -317,7 +322,6 @@ public enum Decider {
     static final boolean ques2D3_1(){
         return 
         Game.global_dangerous < 1 &&
-        Game.global_legit > 0 &&
         Game.global_peace > 0;
     }
     static final void ans2D3_1(Question q){
@@ -348,7 +352,7 @@ public enum Decider {
     static final boolean ques2D3_2_1(){
         return 
         e.getRecorder().ifExistBetween(actions->{
-            return actions.getLegit() > 0;
+            return actions.labelsContainer.hasLabel(POLICES);
         }, 3);
     }
     static final void ans2D3_2_1(Question q){
@@ -358,7 +362,7 @@ public enum Decider {
             end(holdingID, holding ->{
                 ArrayList<Action> temp = 
                 ActionX.searchWtihCondition(condition ->{
-                    return condition.getLegit() < 0 && condition.getDangerous() < 0;
+                    return condition.labelsContainer.hasLabel(THIEVES) && !condition.labelsContainer.hasLabel(CRIMINALS);
                 });
 
                 return temp.toArray(new Action[temp.size()]);
@@ -375,7 +379,7 @@ public enum Decider {
             end(holdingID, holding ->{
                 ArrayList<Action> temp = 
                 ActionX.searchWtihCondition(condition ->{
-                    return condition.getLegit() < 0 && condition.getDangerous() < 0;
+                    return condition.labelsContainer.hasLabel(THIEVES) && !condition.labelsContainer.hasLabel(CRIMINALS);
                 });
 
                 return temp.toArray(new Action[temp.size()]);
@@ -402,7 +406,8 @@ public enum Decider {
     //Will be suppressed?
     
     static final boolean ques2D4_1(){
-        return p.getAmmoLeft() >= 3 || e.getRecorder().ifExistBetween(actions ->actions.getLegit() < 0,3);
+        return p.getAmmoLeft() >= 3 
+            || e.getRecorder().ifExistBetween(actions -> actions.labelsContainer.hasLabel(THIEVES),3);
     }
     static final void ans2D4_1(Question q){
         if(q.test()){
@@ -416,7 +421,7 @@ public enum Decider {
     
     static final boolean ques2D4_2(){
         return (p.getAmmoLeft() > 0 && AM_RNGenerator.newRNG(600)) 
-        || (p.getAmmoLeft() > 3 && e.getRecorder().ifExistBetween(actions -> actions.getDangerous() > 0 && actions.getLegit() <= 0, 1));
+        || (p.getAmmoLeft() > 3 && e.getRecorder().ifExistBetween(actions -> actions.labelsContainer.hasLabel(CRIMINALS), 1));
     }
     static final void ans2D4_2(Question q){
         if(q.test()){
@@ -436,7 +441,7 @@ public enum Decider {
             end(holdingID, holding ->{
                 ArrayList<Action> temp = 
                 ActionX.searchWtihCondition(condition ->{
-                    return condition.getLegit() > 0 && condition.getDangerous() > 0;
+                    return condition.labelsContainer.hasLabel(POLICES) && condition.getDangerous() > 0;
                 });
 
                 return temp.toArray(new Action[temp.size()]);    
@@ -454,8 +459,8 @@ public enum Decider {
         if(q.test()){
 
             ArrayList<Action> poolList = ActionX.searchWtihCondition(
-                action->action.getDangerous() > 0 
-                && action.getLegit() == 0 
+                action->action.labelsContainer.hasLabel(CRIMINALS)
+                && !action.labelsContainer.hasLabel(THIEVES)
                 && action.getAmmoCost() <= e.getAmmoLeft());
             Action[] pool = poolList.toArray(new Action[poolList.size()]);
 
@@ -470,7 +475,7 @@ public enum Decider {
 
     //Will defend yourself?
     static final boolean ques2D6(){
-        return e.getHP() < Game.MAX_HP * 0.3f && Game.global_dangerous > 1 && AM_RNGenerator.newRNG(500);
+        return e.getHP() < GameClient.getCurrentMaxHP() * 0.3f && Game.global_dangerous > 1 && AM_RNGenerator.newRNG(500);
     }
     static final void ans2D6(Question q){
         if(q.test()){
@@ -524,7 +529,7 @@ public enum Decider {
     static final boolean ques2D7_1_1(){
         return 
         e.getRecorder().ifExistBetween(actions->{
-            return e.getRecorder().isEmpty()?false:actions.getLegit() > 0;
+            return e.getRecorder().isEmpty()?false:actions.labelsContainer.hasLabel(POLICES);
         }, 3) && AM_RNGenerator.newRNG(400);
     }
     static final void ans2D7_1_1(Question q){
@@ -550,7 +555,7 @@ public enum Decider {
     static final boolean ques2D7_2_1(){
         return 
         e.getRecorder().ifExistBetween(actions->{
-            return e.getRecorder().isEmpty()?false:actions.getLegit() > 0;
+            return e.getRecorder().isEmpty()?false:actions.labelsContainer.hasLabel(POLICES);
         }, 3) && AM_RNGenerator.newRNG(200);
     }
     static final void ans2D7_2_1(Question q){
@@ -566,7 +571,7 @@ public enum Decider {
     //D_8_1("Will be attacked?",AM_Decision::ques2D8_1,AM_Decision::ans2D8_1),
     //D_8_2("Is in emergency?",AM_Decision::ques2D8_2,AM_Decision::ans2D8_2),
     static final boolean ques2D8(){
-        return e.getHP() !=  Game.MAX_HP;
+        return e.getHP() !=  GameClient.getCurrentMaxHP();
     }
     static final void ans2D8(Question q){
         if(q.test()){
@@ -641,7 +646,7 @@ public enum Decider {
     static final boolean ques2D12(){
         return 
         (e.getHP() >= 2 && AM_RNGenerator.newRNG(800)) 
-        || (e.getAmmoLeft() > 6 && ActionX.searchActions(holdingID).getLegit() < 0);
+        || (e.getAmmoLeft() > 6 && ActionX.searchActions(holdingID).labelsContainer.hasLabel(THIEVES));
     }
     static final void ans2D12(Question q){
         if(q.test()){

@@ -87,10 +87,6 @@ public final class Recorder {
         writeRecord(input, at);
     }//unimplement methods
     //**************** end of the add()
-    
-    final int this_win = 1;
-    final int this_lost = -1;
-    //final int tied = 0;
 
     public void simpleSummary(){
         
@@ -98,20 +94,16 @@ public final class Recorder {
             if(r.getThisActions() == null) break;
 
             int d = r.getThisActions().getDangerous(),od = r.getOppActions().getDangerous();
-            int l = r.getThisActions().getLegit(), ol = r.getThisActions().getLegit();
             int a = r.getThisActions().getAmmoCost(), oa = r.getOppActions().getAmmoCost();
             
             if(r.getResult() == WIN){
                 Game.global_dangerous -= d - od;
-                Game.global_legit -= l - ol;
                 Game.global_peace -= a - oa;
             }else if(r.getResult() == LOST ){
                 Game.global_dangerous += d - od;
-                Game.global_legit += l - ol;
                 Game.global_peace += a - oa;
             }else if(r.getResult() == TIED){
                 Game.global_dangerous -= Math.max(d, od);
-                Game.global_legit -= Math.max(l, ol);
                 Game.global_peace -= Math.min(a, oa);
             }else{
                 throw new IllegalArgumentException();
@@ -208,14 +200,8 @@ public final class Recorder {
         public Action getOppActions() {
             return opponentHistory;
         }
-        public void setOppActions(Action opponentActions) {
-            this.opponentHistory = opponentActions;
-        }
         public Action getThisActions() {
             return thisHistory;
-        }
-        public void setThisActions(Action thisActions) {
-            this.thisHistory = thisActions;
         }
         public int getSerial() {
             return serial;
@@ -225,9 +211,6 @@ public final class Recorder {
         }
         public RoundStats getResult() {
             return result;
-        }
-        public void setResult(RoundStats result) {
-            this.result = result;
         }
 
         @Override

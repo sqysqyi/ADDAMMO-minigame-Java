@@ -2,6 +2,7 @@ package game.addammo.AddAmmoMain.players;
 
 import game.addammo.AddAmmoMain.actions.Action;
 import game.addammo.AddAmmoMain.actions.ActionX;
+import game.addammo.AddAmmoUtil.Anotations.Nullable;
 
 public class Player extends Players {
 
@@ -27,17 +28,17 @@ public class Player extends Players {
     }//never used seems :D
 
     @Override
-    public int actionsSelecting(int playerInput, Player player,PlayerStats playerStats){
-        if(this.getAmmoLeft() < this.selectActions(playerInput).getAmmoCost()){
-            return -1;
+    public int actionsSelecting(int playerInput, @Nullable Player player,PlayerStats playerStats){
+        if(ActionX.isNull(playerInput)){
+            return -3;
         }else if(playerInput == 602 && !playerStats.isMissileSettled){//failing launch missile with no launcher settled
             return -2;
-        }else if(ActionX.isNull(playerInput)){
-            return -3;
+        }else if(this.getAmmoLeft() < this.selectActions(playerInput).getAmmoCost()){
+            return -1;
         }else{
             return playerInput;
         }
         
-    }//虽然我知道这东西有点多余
+    }
 
 }

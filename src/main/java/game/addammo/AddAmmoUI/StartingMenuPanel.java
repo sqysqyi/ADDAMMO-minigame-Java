@@ -1,4 +1,4 @@
-package game.addammo.AddAmmoUI.gameRender;
+package game.addammo.AddAmmoUI;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -9,10 +9,10 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 
-import game.addammo.AddAmmoUI.FrameSize;
-import game.addammo.AddAmmoUI.initUI;
+import static game.addammo.AddAmmoUI.FrameSize.*;
 
 public class StartingMenuPanel extends JPanel implements initUI{
     JLabel title = new JLabel("Add Ammo! ");
@@ -35,23 +35,25 @@ public class StartingMenuPanel extends JPanel implements initUI{
         setLayout(new BorderLayout());
 
         titlePanel = new JPanel();
-        titlePanel.setPreferredSize(new Dimension(FrameSize.Frame_SIZE_WIDTH, FrameSize.Frame_SIZE_HEIGHT/3));
+        titlePanel.setPreferredSize(new Dimension(Frame_SIZE_WIDTH, Frame_SIZE_HEIGHT/3));
         titlePanel.add(title);
         add(titlePanel, BorderLayout.NORTH);
 
         leftEmptyPanel = new JPanel();
-        leftEmptyPanel.setPreferredSize(new Dimension(FrameSize.EMPTY_PANEL_WIDTH,FrameSize.EMPTY_PANEL_HEIGHT));
+        leftEmptyPanel.setPreferredSize(new Dimension(EMPTY_PANEL_WIDTH,EMPTY_PANEL_HEIGHT));
         add(leftEmptyPanel, BorderLayout.WEST);
 
         rightEmptyPanel = new JPanel();
-        rightEmptyPanel.setPreferredSize(new Dimension(FrameSize.EMPTY_PANEL_WIDTH,FrameSize.EMPTY_PANEL_HEIGHT));
+        rightEmptyPanel.setPreferredSize(new Dimension(EMPTY_PANEL_WIDTH,EMPTY_PANEL_HEIGHT));
         add(rightEmptyPanel, BorderLayout.EAST);
 
         buttonAreaPanel = new JPanel(new GridLayout(2, 1, 0, 20));
-        buttonAreaPanel.setPreferredSize(new Dimension(FrameSize.BUTTONAREA_WIDTH, FrameSize.EMPTY_PANEL_HEIGHT));
+        buttonAreaPanel.setPreferredSize(new Dimension(BUTTONAREA_WIDTH, EMPTY_PANEL_HEIGHT));
             JPanel startPanel = new JPanel();
             JLabel startLabel = new JLabel("Start!");
             startPanel.setBorder(new LineBorder(Color.BLUE, 3));
+            startLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            startLabel.setVerticalAlignment(SwingConstants.CENTER);
             startPanel.setBackground(Color.WHITE);
             startPanel.add(startLabel);
             startPanel.addMouseListener(new MouseListener() {
@@ -59,7 +61,7 @@ public class StartingMenuPanel extends JPanel implements initUI{
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     // TODO Auto-generated method stub
-                    //throw new UnsupportedOperationException("Unimplemented method 'mouseClicked'");
+                    onStartButtonSelected();
 
                 }
 
@@ -103,12 +105,15 @@ public class StartingMenuPanel extends JPanel implements initUI{
 
             cfgStartPanel.setBorder(new LineBorder(Color.BLUE, 3));
             cfgStartPanel.setBackground(Color.WHITE);
+            cfgStartLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            cfgStartLabel.setVerticalAlignment(SwingConstants.CENTER);
             cfgStartPanel.add(cfgStartLabel);
             cfgStartPanel.addMouseListener(new MouseListener() {
 
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     // TODO Auto-generated method stub
+                    onConfigButtonSelected();
                 }
 
                 @Override
@@ -150,7 +155,7 @@ public class StartingMenuPanel extends JPanel implements initUI{
         add(buttonAreaPanel,BorderLayout.CENTER);
 
         bottomPanel = new JPanel();
-        bottomPanel.setPreferredSize(new Dimension(FrameSize.Frame_SIZE_WIDTH, FrameSize.BOTTOM_GAP));
+        bottomPanel.setPreferredSize(new Dimension(Frame_SIZE_WIDTH, BOTTOM_GAP));
         add(bottomPanel,BorderLayout.SOUTH);
     }
 

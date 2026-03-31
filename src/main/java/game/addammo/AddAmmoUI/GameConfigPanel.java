@@ -1,4 +1,4 @@
-package game.addammo.AddAmmoUI.gameRender;
+package game.addammo.AddAmmoUI;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -11,16 +11,16 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
-import game.addammo.AddAmmoMain.Start;
-import game.addammo.AddAmmoUI.initUI;
+import game.addammo.StartConfig;
+import game.addammo.AddAmmoMain.GameClient;
 
 public final class GameConfigPanel extends JPanel implements initUI {
 
     private static int gcpWidth = 400, gcpHeight = 200;
 
     private JButton confirmButton = new JButton();
-    private int definedMaxHP = Start.setMaxHP == 0 ? 3 : Start.setMaxHP;
-    private int definedDefaultAmmo = Start.setDefaultAmmo == 0 ? 1 : Start.setDefaultAmmo;
+    private int definedMaxHP = StartConfig.defaultMaxHP;
+    private int definedDefaultAmmo = StartConfig.defaultAmmo;
     private ConfigConfirmListener ccListener;
     
     public GameConfigPanel(){
@@ -80,10 +80,10 @@ public final class GameConfigPanel extends JPanel implements initUI {
                 if(HP <= 0) throw new IllegalArgumentException();
                 if(ammo <= 0) throw new IllegalArgumentException();
 
-                if(ccListener != null) ccListener.onConfirmed();
+                GameClient.setMaxHP(HP);
+                GameClient.setDefaultAmmo(ammo);
 
-                Start.setMaxHP = HP;
-                Start.setDefaultAmmo = ammo;
+                if(ccListener != null) ccListener.onConfirmed();
                 
             }
             catch(NumberFormatException nfe){
@@ -103,10 +103,8 @@ public final class GameConfigPanel extends JPanel implements initUI {
         });
     }
 
-    public interface ConfigConfirmListener {
-        
+    public interface ConfigConfirmListener {    
         void onConfirmed();
-        //not recommand for a lambda description here
     }
 
     public void addConfigConfirmListener(ConfigConfirmListener listener){

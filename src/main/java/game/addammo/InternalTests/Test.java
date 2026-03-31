@@ -2,12 +2,15 @@ package game.addammo.InternalTests;
 
 public class Test {
     public static void main(String[] args) {
+
         System.out.println("==========================");
         System.out.println("AddAmmo test demo");
-        System.out.println("version: " + TestStart.version_t);
+        System.out.println("version: " + Start_t.version_t);
         System.out.println("==========================");
 
-        new Thread(new TestStart(), "preloading").start();
+        new Thread(new Main_t(), "preload thread").start();
+        System.out.println(Thread.currentThread().getName());
+
     }
     /*private long window;
 

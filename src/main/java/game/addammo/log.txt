@@ -47,14 +47,19 @@
     -> 为游戏实例添加事件分发器
     -> 更好地管理Action的执行与判断
 
-2026/03/22 [ /!\ Plans ]
-    
-    AddAmmoLOL 0.2.0 plan
-    -> 多线程！！！
-    -> 看AWT的事件分发线程有点不爽
+2026/03/31
+    AddAmmoLOL 0.2.0 released
+    -> 多线程 >> game为逻辑线程，gameClient为UI，渲染分离
+    -> 移除了对于游戏而言莫名其妙的menubar
+    -> 添加键盘控制的菜单和相关控制：esc呼出暂停重置菜单
 
+2026/03/31 [ /!\ Plans ]
     AddAmmoLOL 0.2.1 plan
+    -> UI微调
     -> 为电脑绘制一个更加合理的逻辑树，至少像点人:\
+    
+    AddAmmoLOL 0.2.2 plan
+    
 
     
     

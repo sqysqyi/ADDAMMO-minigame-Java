@@ -3,7 +3,6 @@ package game.addammo.AddAmmoMain.players.enemies;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Random;
 
 import game.addammo.AddAmmoMain.RoundStats;
@@ -11,14 +10,11 @@ import game.addammo.AddAmmoMain.actions.Action;
 import game.addammo.AddAmmoMain.actions.ActionX;
 import game.addammo.AddAmmoMain.players.Player;
 import game.addammo.AddAmmoMain.players.Players;
-import game.addammo.AddAmmoMain.players.Players.PlayerStats;
 
 public class Enemy extends Players {
-    private int selectedActionID, ambitiousActionID;
+    private int ambitiousActionID;
     private Recorder recorder;
-    private HashMap<Action, Integer> weightSelectingPool;
     private ArrayList<Action> selectingPool;
-    private int confidence;
     
 
     public Enemy() {
@@ -109,9 +105,6 @@ public class Enemy extends Players {
     }
 
     /******************************************************************************************************* */
-
-    private final int for_tension = 0;
-    private final int for_instability = 1;
     /**
      * This method is designed for simulating how computer decide the next action
      * would be
@@ -121,7 +114,6 @@ public class Enemy extends Players {
    
     /********************************************************************************************************* */
 // actionsSelecting() end here
-    private static final int DEFAULT_WEIGHT = 1;
 
     private void init() {
         //weightMap = new HashMap<>();
@@ -154,7 +146,7 @@ public class Enemy extends Players {
          * local method used while enemy grasping round result
          * @param winner from Game.java
          * @return 1:enemy win, 0:tied, -1:this enemy lost
-         * @see Game_t.Game
+         * @see GameClient.Game
          */
         RoundStats resultResolve();
 

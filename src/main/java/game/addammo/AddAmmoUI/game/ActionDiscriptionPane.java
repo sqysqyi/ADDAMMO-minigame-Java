@@ -1,4 +1,4 @@
-package game.addammo.AddAmmoUI.gameRender.game;
+package game.addammo.AddAmmoUI.game;
 
 import java.awt.Color;
 import java.awt.Font;
